@@ -21,7 +21,7 @@ gunicorn = "19.9.0"
 psycopg2-binary = "<2.9"
 django-storages = {version = "1.7.1", extras = ["boto3"]}
 django-anymail = {version = "6.0.1", extras = ["mailgun"]}
-Django = "^2.2.25"
+Django = "^2.2.27"
 Collectfast = "0.6.2"
 flake8 = "3.7.7"
 coverage = "4.5.3"
