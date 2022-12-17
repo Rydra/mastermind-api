@@ -62,8 +62,6 @@ exclude = '''
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "config.settings.test"
-python_files = "test_* *_tests.py *_utests.py"
-python_classes = "Test* *Tests"
 
 # I don't exactly know why, but if I don't add the apps folder... it won't work
 markers = [
@@ -71,6 +69,7 @@ markers = [
     "documentation",
     "integrationtest"
 ]
+python_paths = "src"
 norecursedirs = ".cache dumps *.egg-info .git appdir .tox"
 
 

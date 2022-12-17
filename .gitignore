@@ -328,7 +328,6 @@ mastermind_py/media/
 
 .ipython/
 .env
-.envs/*
-!.envs/.local/
+!envs/.local/
 
 .idea/
