@@ -61,7 +61,7 @@ exclude = '''
 '''
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "config.settings.test"
+DJANGO_SETTINGS_MODULE = "config.settings.local"
 
 # I don't exactly know why, but if I don't add the apps folder... it won't work
 markers = [
