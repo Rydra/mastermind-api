@@ -4,41 +4,44 @@ from django.http import HttpResponse
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 
-from apps.mastermind.domain import Game
-from apps.mastermind.repo import Games
-from apps.mastermind.schemas import GameSchema, GuessSchema
+from apps.infrastructure.command_bus import CommandBus
+from apps.mastermind.commands.game import (
+    CreateGame,
+    AddGuess,
+)
+from apps.mastermind.queries.game import (
+    ListGames,
+    ListGamesHandler,
+    GetGameHandler,
+    GetGame,
+)
+from apps.mastermind.schemas import GameSchema
+from config.composite_root.container import provide
 
 
 class MastermindViewset(viewsets.ViewSet):
     def list(self, request: Any) -> HttpResponse:
-        games = Games().all()
+        games = provide(ListGamesHandler).run(ListGames())
         data = GameSchema(many=True).dump(games)
         return Response(data={"results": data})
 
     def create(self, request: Any) -> HttpResponse:
-        data = GameSchema().load(request.data)
-
-        game = Game.new(data["num_slots"], data["num_colors"], data["max_guesses"])
-        Games().save(game)
+        command = CreateGame(**request.data)
+        game = CommandBus().send(command)
 
         result = GameSchema().dump(game)
 
         return Response(status=status.HTTP_201_CREATED, data=result)
 
     def retrieve(self, request: Any, id: int) -> HttpResponse:
-        game = Games().get(id)
+        game = provide(GetGameHandler).run(GetGame(id=id))
         data = GameSchema().dump(game)
         return Response(data=data)
 
 
 class GuessesViewset(viewsets.ViewSet):
     def create(self, request: Any, id: int) -> HttpResponse:
-        data = GuessSchema().load(request.data)
-
-        game = Games().get(id)
-        game.add_guess(data["code"])
-        Games().save(game)
-
+        game = CommandBus().send(AddGuess(id=id, **request.data))
         result = GameSchema().dump(game)
 
         return Response(status=status.HTTP_201_CREATED, data=result)

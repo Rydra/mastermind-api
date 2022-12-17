@@ -136,7 +136,7 @@ TEMPLATES = [
 # http://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
-LOCAL_APPS = ["apps.mastermind.apps.MastermindConfig"]
+LOCAL_APPS = ["apps.mastermind.apps.MastermindConfig", "config.apps.MastermindConfig"]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 

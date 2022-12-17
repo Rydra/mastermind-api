@@ -4,7 +4,7 @@ import pytest
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from apps.mastermind.domain import Game
+from apps.mastermind.domain.domain import Game
 from apps.mastermind.repo import Games
 from hamcrest import *
 

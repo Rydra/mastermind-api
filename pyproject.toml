@@ -36,6 +36,10 @@ django_coverage_plugin = "1.6.0"
 pydash = "^5.1.0"
 marshmallow = "^3.14.1"
 django-cors-headers = "^3.10.1"
+pydantic = "^1.10.2"
+pinject = "^0.14.1"
+singleton-py3 = "^0.2.1"
+funcy = "^1.17"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"

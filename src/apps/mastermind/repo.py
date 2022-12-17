@@ -1,6 +1,6 @@
 from typing import List
 
-from apps.mastermind.domain import Game, Guess
+from apps.mastermind.domain.domain import Game, Guess
 from apps.mastermind.models import GameModel, GuessModel
 
 
