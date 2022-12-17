@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mastermind-api"
-version = "1.0.1"
+version = "1.1.0"
 description = ""
 authors = ["David <davigetto@gmail.com>"]
 
@@ -80,7 +80,7 @@ norecursedirs = ".cache dumps *.egg-info .git appdir .tox"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "1.0.1"
+version = "1.1.0"
 tag_format = "$version"
 version_files = [
     "pyproject.toml:version"
