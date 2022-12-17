@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mastermind-api"
-version = "1.0.0"
+version = "1.0.1"
 description = ""
 authors = ["David <davigetto@gmail.com>"]
 
@@ -72,6 +72,16 @@ markers = [
 python_paths = "src"
 norecursedirs = ".cache dumps *.egg-info .git appdir .tox"
 
+
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "1.0.1"
+tag_format = "$version"
+version_files = [
+    "pyproject.toml:version"
+]
+annotated_tag = true
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
