@@ -25,3 +25,10 @@ class CommandBus(metaclass=Singleton):
         handler = self.handlers.get(type(command))
         if handler:
             return handler.run(command)
+
+    async def asend(self, command: Command) -> Any:
+        handler = self.handlers.get(type(command))
+        if handler:
+            if inspect.iscoroutinefunction(handler.run):
+                return await handler.run(command)
+            return handler.run(command)

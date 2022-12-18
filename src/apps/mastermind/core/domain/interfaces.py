@@ -16,3 +16,15 @@ class IGameRepository(ABC):
     @abstractmethod
     def get(self, id: int) -> Game:
         ...
+
+    @abstractmethod
+    async def aall(self) -> List[Game]:
+        ...
+
+    @abstractmethod
+    async def asave(self, game: Game) -> None:
+        ...
+
+    @abstractmethod
+    async def aget(self, id: int) -> Game:
+        ...

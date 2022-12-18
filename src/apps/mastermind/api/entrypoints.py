@@ -37,7 +37,7 @@ class GameController:
     )
     async def list_games(self) -> ListGamesResponse:
         try:
-            games = provide(ListGamesHandler).run(ListGames())
+            games = await provide(ListGamesHandler).run(ListGames())
             results = ListGamesResponse(
                 results=[GameDto.from_domain(game) for game in games]
             )
@@ -58,7 +58,7 @@ class GameController:
     )
     async def get_game(self, game_id: int) -> GameDto:
         try:
-            game = provide(GetGameHandler).run(GetGame(id=game_id))
+            game = await provide(GetGameHandler).run(GetGame(id=game_id))
             return GameDto.from_domain(game)
         except Exception as e:
             return JSONResponse(content={"message": str(e)}, status_code=500)
@@ -82,7 +82,7 @@ class GameController:
                 num_colors=request.num_colors,
                 max_guesses=request.max_guesses,
             )
-            game = CommandBus().send(command)
+            game = await CommandBus().asend(command)
 
             return GameDto.from_domain(game)
         except Exception as e:
@@ -101,7 +101,7 @@ class GameController:
     )
     async def add_guess(self, game_id: int, request: AddGuessRequest) -> GameDto:
         try:
-            game = CommandBus().send(AddGuess(id=game_id, code=request.code))
+            game = await CommandBus().asend(AddGuess(id=game_id, code=request.code))
 
             return GameDto.from_domain(game)
         except Exception as e:

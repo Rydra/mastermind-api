@@ -10,3 +10,8 @@ def media_storage(settings, tmpdir):
 @pytest.fixture
 def request_factory() -> RequestFactory:
     return RequestFactory()
+
+
+@pytest.fixture
+def anyio_backend():
+    return "asyncio"

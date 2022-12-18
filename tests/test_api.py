@@ -24,7 +24,7 @@ def api_client():
 @pytest.mark.django_db(transaction=True)
 class TestMastermindApi:
     @staticmethod
-    def create_game(
+    async def create_game(
         num_slots: int,
         num_colors: int,
         max_guesses: int,
@@ -43,7 +43,7 @@ class TestMastermindApi:
             guesses=[],
         )
 
-        GameRepository().save(game)
+        await GameRepository().asave(game)
         return game
 
     def assert_guess(
@@ -56,9 +56,9 @@ class TestMastermindApi:
             response.json()["guesses"][0]["black_pegs"], is_(expected_black_peg)
         )
 
-    def test_get_games(self, api_client):
+    async def test_get_games(self, api_client, anyio_backend):
         """Check if retrieve all games correctly"""
-        self.create_game(
+        await self.create_game(
             4,
             4,
             2,
@@ -85,9 +85,9 @@ class TestMastermindApi:
         assert_that(response.status_code, is_(status.HTTP_200_OK))
         assert_that(response.json(), expected_response)
 
-    def test_get_game(self, api_client):
+    async def test_get_game(self, api_client, anyio_backend):
         """Check if retrieve a game correctly"""
-        game = self.create_game(
+        game = await self.create_game(
             4,
             4,
             2,
@@ -110,7 +110,7 @@ class TestMastermindApi:
         assert_that(response.status_code, is_(status.HTTP_200_OK))
         assert_that(response.json(), expected_response)
 
-    def test_create_game(self, api_client):
+    async def test_create_game(self, api_client, anyio_backend):
         """Check if a game is created correctly"""
         response = api_client.post(
             "/api/games/",
@@ -127,9 +127,9 @@ class TestMastermindApi:
         assert_that(response.status_code, is_(status.HTTP_201_CREATED))
         assert_that(response.json(), expected_response)
 
-    def test_create_guess(self, api_client):
+    async def test_create_guess(self, api_client, anyio_backend):
         """Check if guess create correctly"""
-        game = self.create_game(
+        game = await self.create_game(
             4,
             6,
             2,
@@ -159,9 +159,9 @@ class TestMastermindApi:
         assert_that(response.status_code, status.HTTP_201_CREATED)
         assert_that(response.json(), expected_response)
 
-    def test_retrieve_guesses(self, api_client):
+    async def test_retrieve_guesses(self, api_client, anyio_backend):
         """Check if guesses are retrieved correctly"""
-        game = self.create_game(
+        game = await self.create_game(
             4,
             5,
             2,
@@ -228,11 +228,11 @@ class TestMastermindApi:
             ),
         ],
     )
-    def test_one_white_peg(
-        self, api_client, secret_code, guess, white_pegs, black_pegs
+    async def test_one_white_peg(
+        self, api_client, secret_code, guess, white_pegs, black_pegs, anyio_backend
     ):
         """Check if return one white peg"""
-        game = self.create_game(
+        game = await self.create_game(
             4,
             6,
             2,

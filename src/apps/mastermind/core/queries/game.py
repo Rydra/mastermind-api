@@ -13,8 +13,8 @@ class ListGamesHandler:
     def __init__(self, game_repository: IGameRepository) -> None:
         self.game_repository = game_repository
 
-    def run(self, command: ListGames) -> List[Game]:
-        games = self.game_repository.all()
+    async def run(self, command: ListGames) -> List[Game]:
+        games = await self.game_repository.aall()
         return games
 
 
@@ -26,6 +26,6 @@ class GetGameHandler:
     def __init__(self, game_repository: IGameRepository) -> None:
         self.game_repository = game_repository
 
-    def run(self, command: GetGame) -> Game:
-        game = self.game_repository.get(command.id)
+    async def run(self, command: GetGame) -> Game:
+        game = await self.game_repository.aget(command.id)
         return game

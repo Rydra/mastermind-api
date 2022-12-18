@@ -14,5 +14,5 @@ class Query(BaseModel):
 
 class CommandHandler(ABC):
     @abstractmethod
-    def run(self, command: Command) -> Any:
+    async def run(self, command: Command) -> Any:
         pass
