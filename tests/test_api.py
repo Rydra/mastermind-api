@@ -1,20 +1,23 @@
 from typing import Any, List
 
 import pytest
-from rest_framework.test import APIClient
 from rest_framework import status
+from starlette.testclient import TestClient
 
 from apps.mastermind.core.domain.domain import Game
 from apps.mastermind.persistence.repo import GameRepository
 from hamcrest import *
 
+from main import app
+
 
 @pytest.fixture
 def api_client():
-    return APIClient()
+    client = TestClient(app)
+    return client
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=True)
 class TestMastermindApi:
     @staticmethod
     def create_game(
@@ -107,8 +110,7 @@ class TestMastermindApi:
         """Check if a game is created correctly"""
         response = api_client.post(
             "/api/games/",
-            data={"num_slots": 4, "num_colors": 4, "max_guesses": 2},
-            format="json",
+            json={"num_slots": 4, "num_colors": 4, "max_guesses": 2},
         )
 
         expected_response = has_entries(
@@ -134,8 +136,7 @@ class TestMastermindApi:
 
         api_client.post(
             f"/api/games/{game.id}/guesses/",
-            data={"code": ["orange", "orange", "orange", "orange"]},
-            format="json",
+            json={"code": ["orange", "orange", "orange", "orange"]},
         )
 
         response = api_client.get(f"/api/games/{game.id}/")
@@ -167,13 +168,11 @@ class TestMastermindApi:
 
         api_client.post(
             f"/api/games/{game.id}/guesses/",
-            data={"code": ["orange", "orange", "orange", "orange"]},
-            format="json",
+            json={"code": ["orange", "orange", "orange", "orange"]},
         )
         api_client.post(
             f"/api/games/{game.id}/guesses/",
-            data={"code": ["blue", "red", "orange", "orange"]},
-            format="json",
+            json={"code": ["blue", "red", "orange", "orange"]},
         )
         response = api_client.get(f"/api/games/{game.id}/")
 
@@ -240,8 +239,7 @@ class TestMastermindApi:
 
         api_client.post(
             f"/api/games/{game.id}/guesses/",
-            data={"code": guess},
-            format="json",
+            json={"code": guess},
         )
         response = api_client.get(f"/api/games/{game.id}/")
 

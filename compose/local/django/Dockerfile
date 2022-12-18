@@ -36,7 +36,9 @@ COPY ./compose/local/django/start /start
 RUN sed -i 's/\r//' /start
 RUN chmod +x /start
 
-WORKDIR /app
+WORKDIR /app/src
 
-CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--conf", "/app/compose/local/django/gunicorn_conf.py", "--preload", "--pythonpath", "/app/src"]
+# this command serves to run the application with django
+# CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--conf", "/app/compose/local/django/gunicorn_conf.py", "--preload", "--pythonpath", "/app/src"]
+CMD ["uvicorn", "main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "8000"]
 ENTRYPOINT ["/entrypoint"]

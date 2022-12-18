@@ -32,7 +32,8 @@ class GameRepository(IGameRepository):
 
     def _to_domain(self, model: GameModel) -> Game:
         guesses = [
-            Guess(g.code, g.black_pegs, g.white_pegs) for g in model.guesses.all()
+            Guess(g.code, g.black_pegs, g.white_pegs)
+            for g in model.guesses.order_by("timestamp")
         ]
 
         return Game(

@@ -13,6 +13,7 @@ class GuessModel(models.Model):
     game = models.ForeignKey(
         "GameModel", on_delete=models.CASCADE, related_name="guesses"
     )
+    timestamp = models.DateTimeField(auto_now=True)
 
 
 class GameModel(models.Model):
