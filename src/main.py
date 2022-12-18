@@ -9,21 +9,16 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from apps.mastermind.fastapi.entrypoints import router as game_router
+from apps.mastermind.api.entrypoints import router as game_router
 from composite_root.bootstrapper import bootstrap
 
 description = """
-MasterMind API give you the basic endpoint for creating this game
-## Overview
-You will be able to:
-* **Create a new game**
-* **Adding guess and getting the response**
-* **Getting the current state of a game**
+Mastermind REST API
 """
 
 app = FastAPI(
     root_path="/",
-    title="MasterMind API",
+    title="Mastermind API",
     description=description,
     version="0.0.1",
     docs_url="/openapi",
@@ -50,6 +45,6 @@ def on_startup():
     bootstrap()
 
 
-@app.get("/server-status")
+@app.get("/hc")
 def get_status():
     return JSONResponse(content={"time": str(datetime.utcnow())})

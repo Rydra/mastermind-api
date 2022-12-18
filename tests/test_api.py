@@ -14,7 +14,11 @@ from main import app
 @pytest.fixture
 def api_client():
     client = TestClient(app)
-    return client
+    with client:
+        # We need to use yield instead of return in order to trigger
+        # startup events in the test.
+        # ref: https://fastapi.tiangolo.com/advanced/testing-events/
+        yield client
 
 
 @pytest.mark.django_db(transaction=True)
