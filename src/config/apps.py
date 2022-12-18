@@ -9,6 +9,6 @@ class MastermindConfig(AppConfig):
     name = "config"
 
     def ready(self) -> None:
-        from config.composite_root.bootstrapper import bootstrap
+        from composite_root.bootstrapper import bootstrap
 
         bootstrap()

@@ -1,10 +1,11 @@
 from typing import List
 
 from apps.mastermind.core.domain.domain import Game, Guess
-from apps.mastermind.models import GameModel, GuessModel
+from apps.mastermind.core.domain.interfaces import IGameRepository
+from apps.mastermind.persistence.models import GameModel, GuessModel
 
 
-class GameRepository:
+class GameRepository(IGameRepository):
     def all(self) -> List[Game]:
         models = GameModel.objects.all()
         return [self._to_domain(model) for model in models]

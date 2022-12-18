@@ -18,3 +18,6 @@ run-infrastructure:
 
 check:
 	pre-commit run --all-files
+
+reset:
+	docker-compose down --remove-orphans --volumes

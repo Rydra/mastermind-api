@@ -15,8 +15,8 @@ from apps.mastermind.core.queries.game import (
     GetGameHandler,
     GetGame,
 )
-from apps.mastermind.dtos import GameSchema
-from config.composite_root.container import provide
+from apps.mastermind.api.dtos import GameSchema
+from composite_root.container import provide
 
 
 class MastermindViewset(viewsets.ViewSet):

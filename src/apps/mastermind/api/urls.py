@@ -1,6 +1,6 @@
 from django.urls import path
 
-from apps.mastermind.entrypoints import MastermindViewset, GuessesViewset
+from apps.mastermind.api.entrypoints import MastermindViewset, GuessesViewset
 
 app_name = "users"
 urlpatterns = [

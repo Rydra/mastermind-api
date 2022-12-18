@@ -8,7 +8,7 @@ urlpatterns = [
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
     # User management
-    path("api/games/", include("apps.mastermind.urls", namespace="mastermind")),
+    path("api/games/", include("apps.mastermind.api.urls", namespace="mastermind")),
     # Your stuff: custom urls includes go here
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

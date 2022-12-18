@@ -1,6 +1,6 @@
 from apps.shared.command_bus import CommandBus
 from apps.mastermind.core.commands.game import CreateGameHandler, AddGuessHandler
-from config.composite_root.container import provide
+from composite_root.container import provide
 
 
 def bootstrap() -> None:
