@@ -1,5 +1,5 @@
-from apps.infrastructure.command_bus import CommandBus
-from apps.mastermind.commands.game import CreateGameHandler, AddGuessHandler
+from apps.shared.command_bus import CommandBus
+from apps.mastermind.core.commands.game import CreateGameHandler, AddGuessHandler
 from config.composite_root.container import provide
 
 

@@ -3,7 +3,7 @@ from typing import Any, Dict, Type
 
 from singleton import Singleton
 
-from apps.infrastructure.interfaces import CommandHandler, Command
+from apps.shared.interfaces import CommandHandler, Command
 
 
 class CommandBus(metaclass=Singleton):

@@ -1,7 +1,7 @@
 from marshmallow import Schema, fields
 
 
-class GuessSchema(Schema):
+class GuessDto(Schema):
     code = fields.List(fields.Str(), required=True)
     black_pegs = fields.Int()
     white_pegs = fields.Int()
@@ -16,4 +16,4 @@ class GameSchema(Schema):
     colors = fields.List(fields.Str())
     status = fields.Str()
     secret_code = fields.List(fields.Str())
-    guesses = fields.List(fields.Nested(GuessSchema))
+    guesses = fields.List(fields.Nested(GuessDto))

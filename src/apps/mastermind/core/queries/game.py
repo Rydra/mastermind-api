@@ -1,8 +1,8 @@
 from typing import List
 
-from apps.infrastructure.interfaces import Query
-from apps.mastermind.domain.domain import Game
-from apps.mastermind.repo import Games
+from apps.shared.interfaces import Query
+from apps.mastermind.core.domain.domain import Game
+from apps.mastermind.persistence.repo import GameRepository
 
 
 class ListGames(Query):
@@ -10,7 +10,7 @@ class ListGames(Query):
 
 
 class ListGamesHandler:
-    def __init__(self, game_repository: Games) -> None:
+    def __init__(self, game_repository: GameRepository) -> None:
         self.game_repository = game_repository
 
     def run(self, command: ListGames) -> List[Game]:
@@ -23,7 +23,7 @@ class GetGame(Query):
 
 
 class GetGameHandler:
-    def __init__(self, game_repository: Games) -> None:
+    def __init__(self, game_repository: GameRepository) -> None:
         self.game_repository = game_repository
 
     def run(self, command: GetGame) -> Game:

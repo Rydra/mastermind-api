@@ -1,8 +1,8 @@
 from typing import List
 
-from apps.infrastructure.interfaces import Command
-from apps.mastermind.domain.domain import Game
-from apps.mastermind.repo import Games
+from apps.shared.interfaces import Command
+from apps.mastermind.core.domain.domain import Game
+from apps.mastermind.persistence.repo import GameRepository
 
 
 class CreateGame(Command):
@@ -12,7 +12,7 @@ class CreateGame(Command):
 
 
 class CreateGameHandler:
-    def __init__(self, game_repository: Games) -> None:
+    def __init__(self, game_repository: GameRepository) -> None:
         self.game_repository = game_repository
 
     def run(self, command: CreateGame) -> Game:
@@ -27,7 +27,7 @@ class AddGuess(Command):
 
 
 class AddGuessHandler:
-    def __init__(self, game_repository: Games) -> None:
+    def __init__(self, game_repository: GameRepository) -> None:
         self.game_repository = game_repository
 
     def run(self, command: AddGuess) -> Game:

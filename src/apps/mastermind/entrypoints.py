@@ -4,18 +4,18 @@ from django.http import HttpResponse
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 
-from apps.infrastructure.command_bus import CommandBus
-from apps.mastermind.commands.game import (
+from apps.shared.command_bus import CommandBus
+from apps.mastermind.core.commands.game import (
     CreateGame,
     AddGuess,
 )
-from apps.mastermind.queries.game import (
+from apps.mastermind.core.queries.game import (
     ListGames,
     ListGamesHandler,
     GetGameHandler,
     GetGame,
 )
-from apps.mastermind.schemas import GameSchema
+from apps.mastermind.dtos import GameSchema
 from config.composite_root.container import provide
 
 

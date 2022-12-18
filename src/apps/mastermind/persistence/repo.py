@@ -1,10 +1,10 @@
 from typing import List
 
-from apps.mastermind.domain.domain import Game, Guess
+from apps.mastermind.core.domain.domain import Game, Guess
 from apps.mastermind.models import GameModel, GuessModel
 
 
-class Games:
+class GameRepository:
     def all(self) -> List[Game]:
         models = GameModel.objects.all()
         return [self._to_domain(model) for model in models]
@@ -30,7 +30,6 @@ class Games:
         return self._to_domain(GameModel.objects.get(pk=id))
 
     def _to_domain(self, model: GameModel) -> Game:
-
         guesses = [
             Guess(g.code, g.black_pegs, g.white_pegs) for g in model.guesses.all()
         ]

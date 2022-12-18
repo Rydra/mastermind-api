@@ -4,8 +4,8 @@ import pytest
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from apps.mastermind.domain.domain import Game
-from apps.mastermind.repo import Games
+from apps.mastermind.core.domain.domain import Game
+from apps.mastermind.persistence.repo import GameRepository
 from hamcrest import *
 
 
@@ -36,7 +36,7 @@ class TestMastermindApi:
             guesses=[],
         )
 
-        Games().save(game)
+        GameRepository().save(game)
         return game
 
     def assert_guess(
