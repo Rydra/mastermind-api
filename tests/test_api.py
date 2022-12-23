@@ -1,7 +1,7 @@
 from typing import Any
 
 import pytest
-from rest_framework import status
+from starlette import status
 from starlette.testclient import TestClient
 
 from apps.mastermind.core.domain.domain import Game
