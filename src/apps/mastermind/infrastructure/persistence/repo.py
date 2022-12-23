@@ -1,6 +1,9 @@
+import uuid
+
 from apps.mastermind.core.domain.domain import Game, Guess
 from apps.mastermind.core.domain.interfaces import IGameRepository
 from apps.mastermind.infrastructure.persistence.models import GameModel, GuessModel
+from apps.shared.typing import Id
 
 
 class GameRepository(IGameRepository):
@@ -24,6 +27,9 @@ class GameRepository(IGameRepository):
             )
 
         game.id = model.id
+
+    def next_id(self) -> Id:
+        return str(uuid.uuid4())
 
     def get(self, id: int) -> Game:
         return self._to_domain(GameModel.objects.get(pk=id))

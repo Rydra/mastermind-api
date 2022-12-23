@@ -1,6 +1,7 @@
-from apps.mastermind.core.domain.interfaces import IGameRepository
 from apps.shared.interfaces import Query
 from apps.mastermind.core.domain.domain import Game
+from apps.shared.typing import Id
+from apps.shared.uow import IUnitOfWork
 
 
 class ListGames(Query):
@@ -8,22 +9,24 @@ class ListGames(Query):
 
 
 class ListGamesHandler:
-    def __init__(self, game_repository: IGameRepository) -> None:
-        self.game_repository = game_repository
+    def __init__(self, uow: IUnitOfWork) -> None:
+        self.uow = uow
 
     async def run(self, command: ListGames) -> list[Game]:
-        games = await self.game_repository.aall()
-        return games
+        async with self.uow:
+            games = await self.uow.games.aall()
+            return games
 
 
 class GetGame(Query):
-    id: int
+    id: Id
 
 
 class GetGameHandler:
-    def __init__(self, game_repository: IGameRepository) -> None:
-        self.game_repository = game_repository
+    def __init__(self, uow: IUnitOfWork) -> None:
+        self.uow = uow
 
     async def run(self, command: GetGame) -> Game:
-        game = await self.game_repository.aget(command.id)
-        return game
+        async with self.uow:
+            game = await self.uow.games.aget(command.id)
+            return game

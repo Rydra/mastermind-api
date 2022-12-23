@@ -1,13 +1,12 @@
 from typing import Any
 
 import pytest
+from hamcrest import *
 from starlette import status
 from starlette.testclient import TestClient
 
 from apps.mastermind.core.domain.domain import Game
-from hamcrest import *
-
-from apps.mastermind.infrastructure.persistence.uow import DjangoUnitOfWork
+from apps.mastermind.infrastructure.mongo_persistence.uow import MongoUnitOfWork
 from main import app
 
 
@@ -21,8 +20,6 @@ def api_client():
         yield client
 
 
-@pytest.mark.django_db(transaction=True)
-@pytest.mark.skip()
 class TestMastermindApi:
     @staticmethod
     async def create_game(
@@ -33,9 +30,9 @@ class TestMastermindApi:
         status: str,
         secret_code: list[str],
     ) -> Game:
-        async with DjangoUnitOfWork() as uow:
+        async with MongoUnitOfWork() as uow:
             game = Game(
-                id=None,
+                id=uow.games.next_id(),
                 num_slots=num_slots,
                 num_colors=num_colors,
                 max_guesses=max_guesses,
@@ -47,7 +44,6 @@ class TestMastermindApi:
 
             await uow.games.asave(game)
             await uow.commit()
-
         return game
 
     def assert_guess(
@@ -142,7 +138,7 @@ class TestMastermindApi:
             ["green", "blue", "yellow", "red"],
         )
 
-        api_client.post(
+        response = api_client.post(
             f"/api/games/{game.id}/guesses/",
             json={"code": ["orange", "orange", "orange", "orange"]},
         )

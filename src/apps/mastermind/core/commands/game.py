@@ -1,5 +1,6 @@
 from apps.shared.interfaces import Command
 from apps.mastermind.core.domain.domain import Game
+from apps.shared.typing import Id
 from apps.shared.uow import IUnitOfWork
 
 
@@ -14,8 +15,13 @@ class CreateGameHandler:
         self.uow = uow
 
     async def run(self, command: CreateGame) -> Game:
-        game = Game.new(command.num_slots, command.num_colors, command.max_guesses)
         async with self.uow:
+            game = Game.new(
+                command.num_slots,
+                command.num_colors,
+                command.max_guesses,
+                id=self.uow.games.next_id(),
+            )
             await self.uow.games.asave(game)
             await self.uow.commit()
 
@@ -23,7 +29,7 @@ class CreateGameHandler:
 
 
 class AddGuess(Command):
-    id: int
+    id: Id
     code: list[str]
 
 
