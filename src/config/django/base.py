@@ -3,27 +3,18 @@ Base settings to build other settings files upon.
 """
 from pathlib import Path
 
-from config.settings import config
+from config.settings import settings
 
 ROOT_DIR = Path(__file__).parent.parent.parent
-
 # GENERAL
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
-DEBUG = config("DJANGO_DEBUG", False)
+DEBUG = settings.debug
 # Local time zone. Choices are
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # though not all of them may be available with every OS.
 # In Windows, this must be set to your system time zone.
 TIME_ZONE = "UTC"
-# https://docs.djangoproject.com/en/dev/ref/settings/#language-code
-LANGUAGE_CODE = "en-us"
-# https://docs.djangoproject.com/en/dev/ref/settings/#site-id
-SITE_ID = 1
-# https://docs.djangoproject.com/en/dev/ref/settings/#use-i18n
-USE_I18N = True
-# https://docs.djangoproject.com/en/dev/ref/settings/#use-l10n
-USE_L10N = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#use-tz
 USE_TZ = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#locale-paths
@@ -36,11 +27,11 @@ USE_TZ = True
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": config("POSTGRES_DB"),
-        "USER": config("POSTGRES_USER"),
-        "PASSWORD": config("POSTGRES_PASSWORD"),
-        "HOST": config("POSTGRES_HOST"),
-        "PORT": config("POSTGRES_PORT"),
+        "NAME": settings.db_name,
+        "USER": settings.db_user,
+        "PASSWORD": settings.db_password,
+        "HOST": settings.db_host,
+        "PORT": settings.db_port,
         "ATOMIC_REQUESTS": True,
     }
 }
