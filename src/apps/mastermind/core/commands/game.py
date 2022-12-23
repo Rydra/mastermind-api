@@ -1,5 +1,3 @@
-from typing import List
-
 from apps.mastermind.core.domain.interfaces import IGameRepository
 from apps.shared.interfaces import Command
 from apps.mastermind.core.domain.domain import Game
@@ -23,7 +21,7 @@ class CreateGameHandler:
 
 class AddGuess(Command):
     id: int
-    code: List[str]
+    code: list[str]
 
 
 class AddGuessHandler:

@@ -1,12 +1,10 @@
-from typing import List
-
 from pydantic import BaseModel
 
 from apps.mastermind.core.domain.domain import Game, Guess
 
 
 class GuessDto(BaseModel):
-    code: List[str]
+    code: list[str]
     black_pegs: int
     white_pegs: int
 
@@ -23,10 +21,10 @@ class GameDto(BaseModel):
     num_colors: int
     num_slots: int
     max_guesses: int = 10
-    colors: List[str]
+    colors: list[str]
     status: str
-    secret_code: List[str]
-    guesses: List[GuessDto]
+    secret_code: list[str]
+    guesses: list[GuessDto]
 
     @staticmethod
     def from_domain(game: Game) -> "GameDto":
@@ -44,7 +42,7 @@ class GameDto(BaseModel):
 
 
 class ListGamesResponse(BaseModel):
-    results: List[GameDto]
+    results: list[GameDto]
 
 
 class CreateGameRequest(BaseModel):
@@ -54,4 +52,4 @@ class CreateGameRequest(BaseModel):
 
 
 class AddGuessRequest(BaseModel):
-    code: List[str]
+    code: list[str]

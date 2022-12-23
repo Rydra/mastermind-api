@@ -1,4 +1,4 @@
-from typing import T, Type  # type: ignore
+from typing import T  # type: ignore
 
 import pinject
 from singleton import Singleton
@@ -13,9 +13,9 @@ class Container(metaclass=Singleton):
             binding_specs=[MastermindBindingSpec()],
         )
 
-    def provide(self, klass: Type[T]) -> T:
+    def provide(self, klass: type[T]) -> T:
         return self.obj_graph.provide(klass)
 
 
-def provide(klass: Type[T]) -> T:
+def provide(klass: type[T]) -> T:
     return Container().provide(klass)

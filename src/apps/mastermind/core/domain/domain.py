@@ -1,6 +1,5 @@
 import random
 import uuid
-from typing import List, Tuple, Optional
 
 from pydash import py_
 
@@ -49,7 +48,7 @@ def create_reference() -> str:
 
 
 class Guess:
-    def __init__(self, code: List[str], black_pegs: int, white_pegs: int) -> None:
+    def __init__(self, code: list[str], black_pegs: int, white_pegs: int) -> None:
         self.code = code
         self.black_pegs = black_pegs
         self.white_pegs = white_pegs
@@ -58,14 +57,14 @@ class Guess:
 class Game:
     def __init__(
         self,
-        id: Optional[int],
+        id: int | None,
         reference: str,
         num_slots: int,
         num_colors: int,
-        secret_code: List[str],
+        secret_code: list[str],
         max_guesses: int,
         status: str,
-        guesses: List[Guess],
+        guesses: list[Guess],
     ):
         self.id = id
         self.reference = reference
@@ -77,7 +76,7 @@ class Game:
         self.colors = py_.take(colors, num_colors)
         self.guesses = guesses
 
-    def add_guess(self, code: List[str]) -> None:
+    def add_guess(self, code: list[str]) -> None:
         if self.status != GameStatus.RUNNING:
             raise Exception("Cannot add a new guess, the game is already finished")
 
@@ -91,7 +90,7 @@ class Game:
         else:
             self.status = GameStatus.RUNNING
 
-    def _feedback(self, code: List[str]) -> Tuple[int, int]:
+    def _feedback(self, code: list[str]) -> tuple[int, int]:
         zipped_code = zip(code, self.secret_code)
         black_pegs = sum(1 for c, s in zipped_code if c == s)
         code_counts = py_.count_by(code, lambda x: x)

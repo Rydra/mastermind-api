@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any
 
 import pytest
 from rest_framework import status
@@ -30,7 +30,7 @@ class TestMastermindApi:
         max_guesses: int,
         reference: str,
         status: str,
-        secret_code: List[str],
+        secret_code: list[str],
     ) -> Game:
         game = Game(
             id=None,

@@ -1,5 +1,5 @@
 import inspect
-from typing import Any, Dict, Type
+from typing import Any
 
 from singleton import Singleton
 
@@ -11,7 +11,7 @@ class CommandBus(metaclass=Singleton):
     # we should make this async, as it is more conventional for regular
     # CQRS architectures
     def __init__(self) -> None:
-        self.handlers: Dict[Type[Command], CommandHandler] = {}
+        self.handlers: dict[type[Command], CommandHandler] = {}
 
     def register_handler(self, handler: CommandHandler) -> None:
         for param_name, type in inspect.signature(handler.run).parameters.items():

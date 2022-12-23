@@ -1,12 +1,10 @@
-from typing import List
-
 from apps.mastermind.core.domain.domain import Game, Guess
 from apps.mastermind.core.domain.interfaces import IGameRepository
 from apps.mastermind.infrastructure.persistence.models import GameModel, GuessModel
 
 
 class GameRepository(IGameRepository):
-    def all(self) -> List[Game]:
+    def all(self) -> list[Game]:
         models = GameModel.objects.all()
         return [self._to_domain(model) for model in models]
 
@@ -60,7 +58,7 @@ class GameRepository(IGameRepository):
 
         return model
 
-    async def aall(self) -> List[Game]:
+    async def aall(self) -> list[Game]:
         models = GameModel.objects.all()
         return [await self._ato_domain(model) async for model in models]
 

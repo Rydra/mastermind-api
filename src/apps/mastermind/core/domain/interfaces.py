@@ -1,12 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import List
 
 from apps.mastermind.core.domain.domain import Game
 
 
 class IGameRepository(ABC):
     @abstractmethod
-    def all(self) -> List[Game]:
+    def all(self) -> list[Game]:
         ...
 
     @abstractmethod
@@ -18,7 +17,7 @@ class IGameRepository(ABC):
         ...
 
     @abstractmethod
-    async def aall(self) -> List[Game]:
+    async def aall(self) -> list[Game]:
         ...
 
     @abstractmethod
