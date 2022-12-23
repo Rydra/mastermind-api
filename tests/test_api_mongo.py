@@ -2,11 +2,13 @@ from typing import Any
 
 import pytest
 from hamcrest import *
+from pymongo import MongoClient
 from starlette import status
 from starlette.testclient import TestClient
 
 from apps.mastermind.core.domain.domain import Game
 from apps.mastermind.infrastructure.mongo_persistence.uow import MongoUnitOfWork
+from config.settings import settings
 from main import app
 
 
@@ -18,6 +20,14 @@ def api_client():
         # startup events in the test.
         # ref: https://fastapi.tiangolo.com/advanced/testing-events/
         yield client
+
+
+@pytest.fixture(autouse=True)
+def setup() -> None:
+    settings.mongo_dbname = "test_db"
+    yield
+    client = MongoClient(settings.mongodb_dsm)
+    client.drop_database("test_db")
 
 
 class TestMastermindApi:
