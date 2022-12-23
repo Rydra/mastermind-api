@@ -1,7 +1,7 @@
 import pytest
 from hamcrest import *
 from apps.mastermind.core.domain.domain import Game
-from apps.mastermind.persistence.repo import GameRepository
+from apps.mastermind.infrastructure.persistence.repo import GameRepository
 
 
 @pytest.mark.django_db

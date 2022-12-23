@@ -1,15 +1,11 @@
-from .base import *  # noqa
-from .base import env
-
 # GENERAL
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
+from config.settings import settings
+
 DEBUG = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
-SECRET_KEY = env(
-    "DJANGO_SECRET_KEY",
-    default="5HeE1i8Yu6hMv1RJgnemX32b4VvMxjUgrpZGhB7zImvOknnhkZGKmIwwhHlaQ7KL",
-)
+SECRET_KEY = settings.secret_key
 # CACHES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#caches

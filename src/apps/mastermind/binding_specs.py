@@ -1,6 +1,6 @@
 from typing import Callable
 
-from apps.mastermind.persistence.repo import GameRepository
+from apps.mastermind.infrastructure.persistence.repo import GameRepository
 import pinject
 
 
