@@ -8,7 +8,7 @@ services:
     build:
       context: .
       dockerfile: ./compose/local/django/Dockerfile
-    image: mastermind_py_local_django
+    image: mastermind_py
     depends_on:
       - postgres
     volumes:
@@ -20,13 +20,13 @@ services:
     profiles:
       - debug
 
-  django-gunicorn:
+  gunicorn:
     build:
       context: .
       dockerfile: ./compose/local/django/Dockerfile
-    image: mastermind_py_local_django
+    image: mastermind_py
     depends_on:
-      - postgres
+      - mongodb
     volumes:
       - .:/app
     env_file: *default-envs
@@ -53,7 +53,7 @@ services:
     profiles:
       - infra
 
-  mongo:
+  mongodb:
     image: mongo:4.4.3
     ports:
       - "27017:27017"

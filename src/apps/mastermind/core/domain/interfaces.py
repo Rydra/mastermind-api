@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from apps.mastermind.core.domain.domain import Game
+from apps.shared.typing import Id
 
 
 class IGameRepository(ABC):
@@ -14,6 +15,10 @@ class IGameRepository(ABC):
 
     @abstractmethod
     def get(self, id: int) -> Game:
+        ...
+
+    @abstractmethod
+    def next_id(self) -> Id:
         ...
 
     @abstractmethod

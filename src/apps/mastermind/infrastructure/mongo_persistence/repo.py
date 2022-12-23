@@ -1,18 +1,19 @@
 from typing import List
 
 from bson import ObjectId
-from pymongo import MongoClient
+from motor.core import AgnosticDatabase
+from pymongo import InsertOne, ReplaceOne
 
 from apps.mastermind.core.domain.domain import Game, Guess
 from apps.mastermind.core.domain.interfaces import IGameRepository
+from apps.mastermind.infrastructure.mongo_persistence.session import Session
 from apps.shared.typing import Id
 
 
 class MongoGameRepository(IGameRepository):
-    def __init__(self, client: MongoClient) -> None:
-        self.client = client
-        self.mastermind_db = self.client.mastermind_db
-        self.game_collection = self.mastermind_db.game_collection
+    def __init__(self, database: AgnosticDatabase, session: Session) -> None:
+        self.session = session
+        self.game_collection = database.game_collection
 
     def all(self) -> list[Game]:
         return []
@@ -25,6 +26,9 @@ class MongoGameRepository(IGameRepository):
 
     async def aall(self) -> List[Game]:
         return [self._to_domain(d) async for d in self.game_collection.find()]
+
+    def next_id(self) -> Id:
+        return str(ObjectId())
 
     async def asave(self, game: Game) -> None:
         game_dict = {
@@ -45,11 +49,11 @@ class MongoGameRepository(IGameRepository):
         }
 
         if not game.id:
-            game_id = (await self.game_collection.insert_one(game_dict)).inserted_id
-            game.id = str(game_id)
+            self.session.add_operation(self.game_collection, InsertOne(game_dict))
         else:
-            await self.game_collection.replace_one(
-                {"_id": ObjectId(game.id)}, game_dict, upsert=True
+            self.session.add_operation(
+                self.game_collection,
+                ReplaceOne({"_id": ObjectId(game.id)}, game_dict, upsert=True),
             )
 
     async def aget(self, id: Id) -> Game:

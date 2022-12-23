@@ -104,12 +104,14 @@ class Game:
         return black_pegs, white_pegs - black_pegs
 
     @staticmethod
-    def new(num_slots: int, num_colors: int, max_guesses: int) -> "Game":
+    def new(
+        num_slots: int, num_colors: int, max_guesses: int, id: Id | None = None
+    ) -> "Game":
         reference = create_reference().upper()
         chosen_colors = py_.take(colors, num_colors)
         secret_code = random.choices(chosen_colors, k=num_slots)
         return Game(
-            None,
+            id,
             reference,
             num_slots,
             num_colors,

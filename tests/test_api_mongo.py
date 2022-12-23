@@ -30,19 +30,20 @@ class TestMastermindApi:
         status: str,
         secret_code: list[str],
     ) -> Game:
-        game = Game(
-            id=None,
-            num_slots=num_slots,
-            num_colors=num_colors,
-            max_guesses=max_guesses,
-            reference=reference,
-            status=status,
-            secret_code=secret_code,
-            guesses=[],
-        )
-
         async with MongoUnitOfWork() as uow:
+            game = Game(
+                id=uow.games.next_id(),
+                num_slots=num_slots,
+                num_colors=num_colors,
+                max_guesses=max_guesses,
+                reference=reference,
+                status=status,
+                secret_code=secret_code,
+                guesses=[],
+            )
+
             await uow.games.asave(game)
+            await uow.commit()
         return game
 
     def assert_guess(

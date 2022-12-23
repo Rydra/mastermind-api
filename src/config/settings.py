@@ -14,7 +14,8 @@ class Settings(BaseSettings):
     db_host: str = Field(env="postgres_host")
     db_port: int = Field(env="postgres_port")
 
-    mongodb_dsm = Field(env="mongodb_uri", default="mongodb://localhost:27017")
+    mongodb_dsm = Field(env="mongo_uri", default="mongodb://localhost:27017")
+    mongo_dbname = Field(env="mongo_dbname", default="mastermind_db")
 
 
 settings = Settings()

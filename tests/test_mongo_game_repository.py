@@ -8,7 +8,9 @@ class TestMongoGameRepository:
     async def test_save_new_game_with_uow(self, anyio_backend):
         uow = MongoUnitOfWork()
         async with uow:
-            game = Game.new(num_slots=2, max_guesses=10, num_colors=4)
+            game = Game.new(
+                num_slots=2, max_guesses=10, num_colors=4, id=uow.games.next_id()
+            )
             game.add_guess(["red", "red"])
             await uow.games.asave(game)
             await uow.commit()
@@ -30,9 +32,12 @@ class TestMongoGameRepository:
     async def test_save_update_game_with_uow(self, anyio_backend):
         uow = MongoUnitOfWork()
         async with uow:
-            new_game = Game.new(num_slots=2, max_guesses=10, num_colors=4)
+            new_game = Game.new(
+                num_slots=2, max_guesses=10, num_colors=4, id=uow.games.next_id()
+            )
             new_game.add_guess(["red", "red"])
             await uow.games.asave(new_game)
+            await uow.commit()
 
         async with uow:
             game = await uow.games.aget(new_game.id)
