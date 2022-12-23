@@ -1,3 +1,5 @@
+from typing import List
+
 from bson import ObjectId
 from pymongo import MongoClient
 
@@ -21,8 +23,8 @@ class MongoGameRepository(IGameRepository):
     def get(self, id: int) -> Game:
         pass
 
-    async def aall(self) -> list[Game]:
-        return [self._to_domain(d) for d in self.game_collection.find()]
+    async def aall(self) -> List[Game]:
+        return [self._to_domain(d) async for d in self.game_collection.find()]
 
     async def asave(self, game: Game) -> None:
         game_dict = {
@@ -43,15 +45,15 @@ class MongoGameRepository(IGameRepository):
         }
 
         if not game.id:
-            game_id = self.game_collection.insert_one(game_dict).inserted_id
+            game_id = (await self.game_collection.insert_one(game_dict)).inserted_id
             game.id = str(game_id)
         else:
-            self.game_collection.replace_one(
+            await self.game_collection.replace_one(
                 {"_id": ObjectId(game.id)}, game_dict, upsert=True
             )
 
     async def aget(self, id: Id) -> Game:
-        document = self.game_collection.find_one({"_id": ObjectId(id)})
+        document = await self.game_collection.find_one({"_id": ObjectId(id)})
         if not document:
             raise Exception("Not found")
 

@@ -1,14 +1,15 @@
 from typing import Any
 
-from pymongo import MongoClient
+from motor.motor_asyncio import AsyncIOMotorClient
 
 from apps.mastermind.infrastructure.mongo_persistence.repo import MongoGameRepository
 from apps.shared.uow import IUnitOfWork
+from config.settings import settings
 
 
 class MongoUnitOfWork(IUnitOfWork):
     async def __aenter__(self) -> "MongoUnitOfWork":
-        client = MongoClient()
+        client = AsyncIOMotorClient(settings.mongodb_dsm)
         self.games = MongoGameRepository(client)
         return self
 
