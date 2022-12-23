@@ -1,5 +1,6 @@
 from apps.shared.interfaces import Command
 from apps.mastermind.core.domain.domain import Game
+from apps.shared.typing import Id
 from apps.shared.uow import IUnitOfWork
 
 
@@ -23,7 +24,7 @@ class CreateGameHandler:
 
 
 class AddGuess(Command):
-    id: int
+    id: Id
     code: list[str]
 
 

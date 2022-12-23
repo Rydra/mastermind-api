@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 
 from apps.mastermind.core.domain.domain import Game, Guess
+from apps.shared.typing import Id
 
 
 class GuessDto(BaseModel):
@@ -16,7 +17,7 @@ class GuessDto(BaseModel):
 
 
 class GameDto(BaseModel):
-    id: int
+    id: Id
     reference: str
     num_colors: int
     num_slots: int

@@ -3,6 +3,8 @@ import uuid
 
 from pydash import py_
 
+from apps.shared.typing import Id
+
 
 class Colors:
     RED = "red"
@@ -57,7 +59,7 @@ class Guess:
 class Game:
     def __init__(
         self,
-        id: int | None,
+        id: Id | None,
         reference: str,
         num_slots: int,
         num_colors: int,

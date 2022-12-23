@@ -53,7 +53,19 @@ services:
     profiles:
       - infra
 
+  mongo:
+    image: mongo:4.4.3
+    ports:
+      - "27017:27017"
+    expose:
+      - "27017"
+    volumes:
+      - mongo_data:/data/db
+    profiles:
+      - infra
+
 
 volumes:
+  mongo_data:
   local_postgres_data:
   local_postgres_data_backups:
