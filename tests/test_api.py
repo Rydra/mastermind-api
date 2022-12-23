@@ -5,7 +5,7 @@ from rest_framework import status
 from starlette.testclient import TestClient
 
 from apps.mastermind.core.domain.domain import Game
-from apps.mastermind.persistence.repo import GameRepository
+from apps.mastermind.infrastructure.persistence.repo import GameRepository
 from hamcrest import *
 
 from main import app

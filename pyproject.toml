@@ -44,6 +44,7 @@ fastapi-utils = "^0.2.1"
 uvicorn = "^0.20.0"
 httpx = "^0.23.1"
 Django = "^4.1.4"
+pysettings-yaml = "^0.1.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
@@ -69,7 +70,7 @@ exclude = '''
 '''
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "config.settings.local"
+DJANGO_SETTINGS_MODULE = "config.settings"
 
 # I don't exactly know why, but if I don't add the apps folder... it won't work
 markers = [

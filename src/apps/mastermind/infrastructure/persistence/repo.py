@@ -2,7 +2,7 @@ from typing import List
 
 from apps.mastermind.core.domain.domain import Game, Guess
 from apps.mastermind.core.domain.interfaces import IGameRepository
-from apps.mastermind.persistence.models import GameModel, GuessModel
+from apps.mastermind.infrastructure.persistence.models import GameModel, GuessModel
 
 
 class GameRepository(IGameRepository):

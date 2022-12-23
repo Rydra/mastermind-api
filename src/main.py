@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from apps.mastermind.api.entrypoints import router as game_router
+from apps.mastermind.infrastructure.api.entrypoints import router as game_router
 from composite_root.bootstrapper import bootstrap
 
 description = """

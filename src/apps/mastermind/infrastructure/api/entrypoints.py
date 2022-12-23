@@ -9,7 +9,7 @@ from apps.mastermind.core.queries.game import (
     GetGameHandler,
     GetGame,
 )
-from apps.mastermind.api.dtos import (
+from apps.mastermind.infrastructure.api.dtos import (
     GameDto,
     ListGamesResponse,
     AddGuessRequest,
