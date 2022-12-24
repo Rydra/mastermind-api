@@ -1,9 +1,17 @@
 import random
 import uuid
+from dataclasses import dataclass
+from typing import Generic
 
 from pydash import py_
 
-from apps.shared.typing import Id
+from apps.shared.typing import Id, T
+
+
+@dataclass
+class ListResult(Generic[T]):  # type: ignore
+    count: int
+    results: list[T]
 
 
 class Colors:

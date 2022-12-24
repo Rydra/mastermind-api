@@ -58,8 +58,10 @@ class MongoGameRepository(IGameRepository):
                 ReplaceOne({"_id": ObjectId(game.id)}, game_dict, upsert=True),
             )
 
-    async def aget(self, id: Id) -> Game:
+    async def count(self) -> int:
+        return await self.game_collection.count_documents({})
 
+    async def aget(self, id: Id) -> Game:
         try:
             document = await self.game_collection.find_one({"_id": ObjectId(id)})
         except InvalidId:

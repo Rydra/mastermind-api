@@ -39,7 +39,7 @@ class GameController:
         try:
             games = await provide(ListGamesHandler).run(ListGames())
             results = ListGamesResponse(
-                results=[GameDto.from_domain(game) for game in games]
+                results=[GameDto.from_domain(game) for game in games.results]
             )
             return results
         except Exception as e:

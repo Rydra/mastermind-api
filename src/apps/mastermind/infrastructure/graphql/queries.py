@@ -1,6 +1,24 @@
+from typing import cast, Generic
+
 import strawberry
 
+from apps.mastermind.core.queries.game import (
+    ListGamesHandler,
+    ListGames,
+    GetGameHandler,
+    GetGame,
+)
+from apps.shared.exceptions import NotFound
+from apps.shared.typing import T
+from composite_root.container import provide
+
 from apps.mastermind.core.domain.domain import Guess, Game
+
+
+@strawberry.type
+class Page(Generic[T]):  # type: ignore
+    count: int
+    results: list[T]
 
 
 @strawberry.type
@@ -41,3 +59,19 @@ class GameNode:
             secret_code=game.secret_code,
             guesses=[GuessNode.from_domain(guess) for guess in game.guesses],
         )
+
+
+@strawberry.type
+class Query:
+    @strawberry.field
+    async def games(self) -> Page[GameNode]:  # type: ignore
+        games = await provide(ListGamesHandler).run(ListGames())
+        return Page(count=games.count, results=games.results)
+
+    @strawberry.field
+    async def game(self, id: str) -> GameNode | None:
+        try:
+            game = await provide(GetGameHandler).run(GetGame(id=id))
+            return cast(GameNode, game)
+        except NotFound:
+            return None

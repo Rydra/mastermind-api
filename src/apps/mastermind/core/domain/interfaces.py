@@ -26,6 +26,10 @@ class IGameRepository(ABC):
         ...
 
     @abstractmethod
+    async def count(self) -> int:
+        ...
+
+    @abstractmethod
     async def asave(self, game: Game) -> None:
         ...
 

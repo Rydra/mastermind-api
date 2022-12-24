@@ -11,6 +11,9 @@ class GameRepository(IGameRepository):
         models = GameModel.objects.all()
         return [self._to_domain(model) for model in models]
 
+    async def count(self) -> int:
+        return await GameModel.objects.count()
+
     def save(self, game: Game) -> None:
         model = self._to_model(game)
 
