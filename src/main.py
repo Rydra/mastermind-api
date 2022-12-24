@@ -5,11 +5,14 @@ import django
 django.setup()  # noqa
 
 from datetime import datetime
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from apps.mastermind.infrastructure.api.entrypoints import router as game_router
+from apps.mastermind.infrastructure.graphql.entrypoints import (
+    graphql_app,
+)
 from composite_root.bootstrapper import bootstrap
 
 description = """
@@ -29,6 +32,11 @@ app = FastAPI(
     },
 )
 app.include_router(game_router)
+router = APIRouter()
+router.add_route("/graphql/", graphql_app)
+router.add_websocket_route("/graphql/", graphql_app)
+
+app.include_router(router)
 
 # CORS
 app.add_middleware(
