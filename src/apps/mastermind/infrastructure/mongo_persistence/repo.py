@@ -1,12 +1,14 @@
 from typing import List
 
 from bson import ObjectId
+from bson.errors import InvalidId
 from motor.core import AgnosticDatabase
 from pymongo import InsertOne, ReplaceOne
 
 from apps.mastermind.core.domain.domain import Game, Guess
 from apps.mastermind.core.domain.interfaces import IGameRepository
 from apps.mastermind.infrastructure.mongo_persistence.session import Session
+from apps.shared.exceptions import NotFound
 from apps.shared.typing import Id
 
 
@@ -56,10 +58,17 @@ class MongoGameRepository(IGameRepository):
                 ReplaceOne({"_id": ObjectId(game.id)}, game_dict, upsert=True),
             )
 
+    async def count(self) -> int:
+        return await self.game_collection.count_documents({})
+
     async def aget(self, id: Id) -> Game:
-        document = await self.game_collection.find_one({"_id": ObjectId(id)})
+        try:
+            document = await self.game_collection.find_one({"_id": ObjectId(id)})
+        except InvalidId:
+            document = None
+
         if not document:
-            raise Exception("Not found")
+            raise NotFound()
 
         return self._to_domain(document)
 
