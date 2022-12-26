@@ -2,11 +2,12 @@ from hamcrest import *
 
 from apps.mastermind.core.domain.domain import Game
 from apps.mastermind.infrastructure.mongo_persistence.uow import MongoUnitOfWork
+from composite_root.container import provide
 
 
 class TestMongoGameRepository:
     async def test_save_new_game_with_uow(self, anyio_backend):
-        uow = MongoUnitOfWork()
+        uow = provide(MongoUnitOfWork)
         async with uow:
             game = Game.new(
                 num_slots=2, max_guesses=10, num_colors=4, id=uow.games.next_id()
@@ -30,7 +31,7 @@ class TestMongoGameRepository:
             )
 
     async def test_save_update_game_with_uow(self, anyio_backend):
-        uow = MongoUnitOfWork()
+        uow = provide(MongoUnitOfWork)
         async with uow:
             new_game = Game.new(
                 num_slots=2, max_guesses=10, num_colors=4, id=uow.games.next_id()

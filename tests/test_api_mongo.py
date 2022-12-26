@@ -8,6 +8,7 @@ from starlette.testclient import TestClient
 
 from apps.mastermind.core.domain.domain import Game
 from apps.mastermind.infrastructure.mongo_persistence.uow import MongoUnitOfWork
+from composite_root.container import provide
 from config.settings import settings
 from main import app
 
@@ -40,7 +41,7 @@ class TestMastermindApi:
         status: str,
         secret_code: list[str],
     ) -> Game:
-        async with MongoUnitOfWork() as uow:
+        async with provide(MongoUnitOfWork) as uow:
             game = Game(
                 id=uow.games.next_id(),
                 num_slots=num_slots,

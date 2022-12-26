@@ -14,8 +14,13 @@ class Settings(BaseSettings):
     db_host: str = Field(env="postgres_host")
     db_port: int = Field(env="postgres_port")
 
-    mongodb_dsm = Field(env="mongo_uri", default="mongodb://localhost:27017")
-    mongo_dbname = Field(env="mongo_dbname", default="mastermind_db")
+    mongodb_dsm: str = Field(env="mongo_uri", default="mongodb://localhost:27017")
+    mongo_dbname: str = Field(env="mongo_dbname", default="mastermind_db")
+    redis_host: str = Field(env="redis_host", default="localhost")
+    redis_port: int = Field(env="redis_port", default=6379)
+
+    use_cache: bool = True
+    test_run: bool = False
 
 
 settings = Settings()

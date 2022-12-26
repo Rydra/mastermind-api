@@ -1,4 +1,4 @@
-from typing import List
+import logging
 
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -11,22 +11,15 @@ from apps.mastermind.infrastructure.mongo_persistence.session import Session
 from apps.shared.exceptions import NotFound
 from apps.shared.typing import Id
 
+logger = logging.getLogger()
+
 
 class MongoGameRepository(IGameRepository):
     def __init__(self, database: AgnosticDatabase, session: Session) -> None:
         self.session = session
         self.game_collection = database.game_collection
 
-    def all(self) -> list[Game]:
-        return []
-
-    def save(self, game: Game) -> None:
-        pass
-
-    def get(self, id: int) -> Game:
-        pass
-
-    async def aall(self) -> List[Game]:
+    async def aall(self) -> list[Game]:
         return [self._to_domain(d) async for d in self.game_collection.find()]
 
     def next_id(self) -> Id:

@@ -6,18 +6,6 @@ from apps.shared.typing import Id
 
 class IGameRepository(ABC):
     @abstractmethod
-    def all(self) -> list[Game]:
-        ...
-
-    @abstractmethod
-    def save(self, game: Game) -> None:
-        ...
-
-    @abstractmethod
-    def get(self, id: int) -> Game:
-        ...
-
-    @abstractmethod
     def next_id(self) -> Id:
         ...
 
