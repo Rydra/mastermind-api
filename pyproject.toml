@@ -5,7 +5,7 @@ description = ""
 authors = ["David <davigetto@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.10"
 pytz = "^2019.1"
 python-slugify = "^3.0.2"
 argon2-cffi = "^19.1.0"

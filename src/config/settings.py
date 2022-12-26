@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     redis_port: int = Field(env="redis_port", default=6379)
 
     use_cache: bool = True
+    test_run: bool = False
 
 
 settings = Settings()

@@ -19,15 +19,6 @@ class MongoGameRepository(IGameRepository):
         self.session = session
         self.game_collection = database.game_collection
 
-    def all(self) -> list[Game]:
-        return []
-
-    def save(self, game: Game) -> None:
-        pass
-
-    def get(self, id: int) -> Game:
-        pass
-
     async def aall(self) -> list[Game]:
         return [self._to_domain(d) async for d in self.game_collection.find()]
 

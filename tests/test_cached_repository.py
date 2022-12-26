@@ -7,8 +7,10 @@ from hamcrest import *
 
 from apps.mastermind.core.domain.domain import Game
 from apps.mastermind.core.domain.interfaces import IGameRepository
-from apps.mastermind.infrastructure.mongo_persistence.cache_repo import CachedRepository
+from apps.mastermind.infrastructure.cache.cache_repo import CachedRepository
+from apps.mastermind.infrastructure.mongo_persistence.session import Session
 from apps.shared.anyio import async_to_sync
+from apps.shared.cache import CacheProvider
 from apps.shared.typing import Id
 
 
@@ -23,21 +25,12 @@ class GameRepositoryStub(IGameRepository):
     def __init__(self):
         self.call_counts = defaultdict(int)
 
-    def all(self) -> list[Game]:
-        ...
-
-    def save(self, game: Game) -> None:
-        ...
-
-    def get(self, id: int) -> Game:
-        ...
-
     def next_id(self) -> Id:
         ...
 
     async def aall(self) -> list[Game]:
         self.call_counts["aall"] += 1
-        return ["banana"]
+        return [Game.new(1, 1, 1)]
 
     async def count(self) -> int:
         ...
@@ -47,7 +40,7 @@ class GameRepositoryStub(IGameRepository):
 
     async def aget(self, id: int) -> Game:
         self.call_counts["aget"] += 1
-        return "banana"
+        return Game.new(1, 1, 1)
 
 
 @pytest.mark.integrationtest
@@ -61,7 +54,9 @@ class TestCachedRepository:
 
         request.addfinalizer(clear_cache)
         game_repository_stub = GameRepositoryStub()
-        cached_repository = CachedRepository(game_repository_stub)
+        cached_repository = CachedRepository(
+            game_repository_stub, CacheProvider(caches.get("redis_alt")), Session()
+        )
 
         await cached_repository.aall()
         await cached_repository.aall()
@@ -77,10 +72,15 @@ class TestCachedRepository:
 
         request.addfinalizer(clear_cache)
         game_repository_stub = GameRepositoryStub()
-        cached_repository = CachedRepository(game_repository_stub)
+        session = Session()
+        cached_repository = CachedRepository(
+            game_repository_stub, CacheProvider(caches.get("redis_alt")), session
+        )
 
         await cached_repository.aall()
         await cached_repository.asave(Game.new(1, 1, 1, id="AAA"))
+        await session.commit()
+
         await cached_repository.aall()
 
         assert_that(game_repository_stub.call_counts["aall"], is_(2))
@@ -96,10 +96,17 @@ class TestCachedRepository:
 
         request.addfinalizer(clear_cache)
         game_repository_stub = GameRepositoryStub()
-        cached_repository = CachedRepository(game_repository_stub)
+
+        session = Session()
+        cached_repository = CachedRepository(
+            game_repository_stub, CacheProvider(caches.get("redis_alt")), session
+        )
 
         await cached_repository.aget("AAA")
         await cached_repository.asave(Game.new(1, 1, 1, id="AAA"))
+
+        await session.commit()
+        await cached_repository.aget("AAA")
         await cached_repository.aget("AAA")
 
         assert_that(game_repository_stub.call_counts["aget"], is_(2))
