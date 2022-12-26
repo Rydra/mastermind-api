@@ -1,5 +1,4 @@
-from asyncio import TaskGroup
-
+from apps.shared.anyio import ResultGatheringTaskgroup
 from apps.shared.interfaces import Query
 from apps.mastermind.core.domain.domain import Game, ListResult
 from apps.shared.typing import Id
@@ -16,11 +15,11 @@ class ListGamesHandler:
 
     async def run(self, command: ListGames) -> ListResult[Game]:
         async with self.uow:
-            async with TaskGroup() as tg:
-                games = tg.create_task(self.uow.games.aall())
-                count = tg.create_task(self.uow.games.count())
+            async with ResultGatheringTaskgroup() as tg:
+                games = tg.start_soon(self.uow.games.aall)
+                count = tg.start_soon(self.uow.games.count)
 
-        return ListResult(count=count.result(), results=games.result())
+        return ListResult(count=tg.get_result(count), results=tg.get_result(games))
 
 
 class GetGame(Query):

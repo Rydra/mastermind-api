@@ -1,25 +1,6 @@
-version: '3.9'
-
-x-env-files: &default-envs
-  - ./envs/docker.env
+version: '3'
 
 services:
-  django:
-    build:
-      context: .
-      dockerfile: ./compose/local/django/Dockerfile
-    image: mastermind_py
-    depends_on:
-      - postgres
-    volumes:
-      - .:/app
-    env_file: *default-envs
-    ports:
-      - "8000:8000"
-    command: /start
-    profiles:
-      - debug
-
   gunicorn:
     build:
       context: .
@@ -27,19 +8,23 @@ services:
     image: mastermind_py
     depends_on:
       - mongodb
+      - redis
     volumes:
       - .:/app
-    env_file: *default-envs
+    env_file:
+      - ./envs/docker.env
     ports:
       - "8000:8000"
     working_dir: /app/src
     command: ["uvicorn", "main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "8000"]
-    profiles:
-      - app
+
+  redis:
+    image: redis:3.2.6-alpine
+    ports:
+      - 6379:6379
 
   postgres:
     image: postgres:11.3-alpine
-    init: true
     restart: on-failure
     volumes:
       - local_postgres_data:/var/lib/postgresql/data
@@ -50,8 +35,6 @@ services:
       - "5432"
     env_file:
       - envs/docker.env
-    profiles:
-      - infra
 
   mongodb:
     image: mongo:4.4.3
@@ -61,8 +44,6 @@ services:
       - "27017"
     volumes:
       - mongo_data:/data/db
-    profiles:
-      - infra
 
   mongo-express:
     image: mongo-express
@@ -79,8 +60,6 @@ services:
       ME_CONFIG_MONGODB_URL: mongo://mongodb:27017/
     depends_on:
       - mongodb
-    profiles:
-      - infra
 
 
 volumes:

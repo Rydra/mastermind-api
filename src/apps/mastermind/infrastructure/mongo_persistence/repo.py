@@ -1,4 +1,4 @@
-from typing import List
+import logging
 
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -10,6 +10,8 @@ from apps.mastermind.core.domain.interfaces import IGameRepository
 from apps.mastermind.infrastructure.mongo_persistence.session import Session
 from apps.shared.exceptions import NotFound
 from apps.shared.typing import Id
+
+logger = logging.getLogger()
 
 
 class MongoGameRepository(IGameRepository):
@@ -26,7 +28,7 @@ class MongoGameRepository(IGameRepository):
     def get(self, id: int) -> Game:
         pass
 
-    async def aall(self) -> List[Game]:
+    async def aall(self) -> list[Game]:
         return [self._to_domain(d) async for d in self.game_collection.find()]
 
     def next_id(self) -> Id:

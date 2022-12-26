@@ -1,11 +1,15 @@
 from typing import Callable
 
+from aiocache import caches
+from aiocache.base import BaseCache
+
 from apps.mastermind.infrastructure.mongo_persistence.uow import MongoUnitOfWork
-from apps.mastermind.infrastructure.persistence.repo import GameRepository
 import pinject
 
 
 class MastermindBindingSpec(pinject.BindingSpec):
     def configure(self, bind: Callable) -> None:
-        bind("game_repository", to_class=GameRepository)
         bind("uow", to_class=MongoUnitOfWork)
+
+    def provide_cache(self) -> BaseCache:
+        return caches.get("redis_alt")
