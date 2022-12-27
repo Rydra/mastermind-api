@@ -8,6 +8,7 @@ from apps.mastermind.core.queries.game import (
     GetGameHandler,
     GetGame,
 )
+from apps.mastermind.infrastructure.graphql.shared import ColorEnum, GameStateEnum
 from apps.shared.exceptions import NotFound
 from apps.shared.typing import T
 from composite_root.container import provide
@@ -23,7 +24,7 @@ class Page(Generic[T]):  # type: ignore
 
 @strawberry.type
 class GuessNode:
-    code: list[str]
+    code: list[ColorEnum]
     black_pegs: int
     white_pegs: int
 
@@ -41,9 +42,10 @@ class GameNode:
     num_colors: int
     num_slots: int
     max_guesses: int
-    colors: list[str]
-    status: str
-    secret_code: list[str]
+    colors: list[ColorEnum]
+    state: GameStateEnum
+    secret_code: list[ColorEnum]
+    allowed_colors: list[ColorEnum]
     guesses: list[GuessNode]
 
     @staticmethod
@@ -55,8 +57,9 @@ class GameNode:
             num_slots=game.num_slots,
             max_guesses=game.max_guesses,
             colors=game.colors,
-            status=game.status,
+            state=game.state,
             secret_code=game.secret_code,
+            allowed_colors=game.allowed_colors,
             guesses=[GuessNode.from_domain(guess) for guess in game.guesses],
         )
 

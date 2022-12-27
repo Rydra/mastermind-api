@@ -1,6 +1,6 @@
 from hamcrest import *
 
-from apps.mastermind.core.domain.domain import Game
+from apps.mastermind.core.domain.domain import Game, Color
 from apps.mastermind.infrastructure.mongo_persistence.uow import MongoUnitOfWork
 from composite_root.container import provide
 
@@ -12,7 +12,7 @@ class TestMongoGameRepository:
             game = Game.new(
                 num_slots=2, max_guesses=10, num_colors=4, id=uow.games.next_id()
             )
-            game.add_guess(["red", "red"])
+            game.add_guess([Color.RED, Color.RED])
             await uow.games.asave(game)
             await uow.commit()
 
@@ -25,8 +25,10 @@ class TestMongoGameRepository:
                     max_guesses=10,
                     num_colors=4,
                     secret_code=game.secret_code,
-                    status=game.status,
-                    guesses=contains_exactly(has_properties(code=["red", "red"])),
+                    state=game.state,
+                    guesses=contains_exactly(
+                        has_properties(code=[Color.RED, Color.RED])
+                    ),
                 ),
             )
 
@@ -36,13 +38,13 @@ class TestMongoGameRepository:
             new_game = Game.new(
                 num_slots=2, max_guesses=10, num_colors=4, id=uow.games.next_id()
             )
-            new_game.add_guess(["red", "red"])
+            new_game.add_guess([Color.RED, Color.RED])
             await uow.games.asave(new_game)
             await uow.commit()
 
         async with uow:
             game = await uow.games.aget(new_game.id)
-            game.add_guess(["green", "green"])
+            game.add_guess([Color.GREEN, Color.GREEN])
             await uow.games.asave(game)
             await uow.commit()
 
@@ -56,10 +58,10 @@ class TestMongoGameRepository:
                     max_guesses=10,
                     num_colors=4,
                     secret_code=game.secret_code,
-                    status=game.status,
+                    state=game.state,
                     guesses=contains_exactly(
-                        has_properties(code=["red", "red"]),
-                        has_properties(code=["green", "green"]),
+                        has_properties(code=[Color.RED, Color.RED]),
+                        has_properties(code=[Color.GREEN, Color.GREEN]),
                     ),
                 ),
             )

@@ -1,9 +1,11 @@
 import random
 import uuid
 from dataclasses import dataclass
+from enum import Enum
 from typing import Generic
 
 from pydash import py_
+from pyvaru import ValidationException
 
 from apps.shared.typing import Id, T
 
@@ -14,7 +16,7 @@ class ListResult(Generic[T]):  # type: ignore
     results: list[T]
 
 
-class Colors:
+class Color(Enum):
     RED = "red"
     BLUE = "blue"
     GREEN = "green"
@@ -25,23 +27,29 @@ class Colors:
     PURPLE = "purple"
     TURQUOISE = "turquoise"
 
+    def __str__(self) -> str:
+        return self.value
+
 
 colors = [
-    Colors.RED,
-    Colors.BLUE,
-    Colors.GREEN,
-    Colors.YELLOW,
-    Colors.ORANGE,
-    Colors.WHITE,
-    Colors.PURPLE,
-    Colors.TURQUOISE,
+    Color.RED,
+    Color.BLUE,
+    Color.GREEN,
+    Color.YELLOW,
+    Color.ORANGE,
+    Color.WHITE,
+    Color.PURPLE,
+    Color.TURQUOISE,
 ]
 
 
-class GameStatus:
+class GameState(Enum):
     RUNNING = "running"
     WON = "won"
     LOST = "lost"
+
+    def __str__(self) -> str:
+        return self.value
 
 
 def create_reference() -> str:
@@ -58,7 +66,7 @@ def create_reference() -> str:
 
 
 class Guess:
-    def __init__(self, code: list[str], black_pegs: int, white_pegs: int) -> None:
+    def __init__(self, code: list[Color], black_pegs: int, white_pegs: int) -> None:
         self.code = code
         self.black_pegs = black_pegs
         self.white_pegs = white_pegs
@@ -71,9 +79,10 @@ class Game:
         reference: str,
         num_slots: int,
         num_colors: int,
-        secret_code: list[str],
+        secret_code: list[Color],
         max_guesses: int,
-        status: str,
+        allowed_colors: list[Color],
+        state: GameState,
         guesses: list[Guess],
     ):
         self.id = id
@@ -82,25 +91,29 @@ class Game:
         self.num_colors = num_colors
         self.secret_code = secret_code
         self.max_guesses = max_guesses
-        self.status = status
-        self.colors = py_.take(colors, num_colors)
+        self.state = state
+        self.colors: list[Color] = py_.take(colors, num_colors)
+        self.allowed_colors = allowed_colors
         self.guesses = guesses
 
-    def add_guess(self, code: list[str]) -> None:
-        if self.status != GameStatus.RUNNING:
-            raise Exception("Cannot add a new guess, the game is already finished")
+    def add_guess(self, code: list[Color]) -> None:
+        from apps.mastermind.core.domain.validator import AddGuessValidator
+
+        validation = AddGuessValidator().validate({"game": self, "code": code})
+        if not validation.is_successful():
+            raise ValidationException(validation)
 
         black_pegs, white_pegs = self._feedback(code)
         self.guesses.append(Guess(code, black_pegs, white_pegs))
 
         if black_pegs == self.num_slots:
-            self.status = GameStatus.WON
+            self.state = GameState.WON
         elif len(self.guesses) >= self.max_guesses:
-            self.status = GameStatus.LOST
+            self.state = GameState.LOST
         else:
-            self.status = GameStatus.RUNNING
+            self.state = GameState.RUNNING
 
-    def _feedback(self, code: list[str]) -> tuple[int, int]:
+    def _feedback(self, code: list[Color]) -> tuple[int, int]:
         zipped_code = zip(code, self.secret_code)
         black_pegs = sum(1 for c, s in zipped_code if c == s)
         code_counts = py_.count_by(code, lambda x: x)
@@ -116,7 +129,10 @@ class Game:
         num_slots: int, num_colors: int, max_guesses: int, id: Id | None = None
     ) -> "Game":
         reference = create_reference().upper()
+        num_colors = clamp(1, num_colors, len(Color))
         chosen_colors = py_.take(colors, num_colors)
+
+        num_slots = clamp(1, num_slots, num_slots)
         secret_code = random.choices(chosen_colors, k=num_slots)
         return Game(
             id,
@@ -125,6 +141,11 @@ class Game:
             num_colors,
             secret_code,
             max_guesses,
-            GameStatus.RUNNING,
+            chosen_colors,
+            GameState.RUNNING,
             [],
         )
+
+
+def clamp(minvalue: int, value: int, maxvalue: int) -> int:
+    return max(minvalue, min(value, maxvalue))

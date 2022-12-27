@@ -6,11 +6,10 @@ from pymongo import MongoClient
 from starlette import status
 from starlette.testclient import TestClient
 
-from apps.mastermind.core.domain.domain import Game
-from apps.mastermind.infrastructure.mongo_persistence.uow import MongoUnitOfWork
-from composite_root.container import provide
+from apps.mastermind.core.domain.domain import Color
 from config.settings import settings
 from main import app
+from tests.stubs import GameMother
 
 
 @pytest.fixture
@@ -32,31 +31,6 @@ def setup() -> None:
 
 
 class TestMastermindApi:
-    @staticmethod
-    async def create_game(
-        num_slots: int,
-        num_colors: int,
-        max_guesses: int,
-        reference: str,
-        status: str,
-        secret_code: list[str],
-    ) -> Game:
-        async with provide(MongoUnitOfWork) as uow:
-            game = Game(
-                id=uow.games.next_id(),
-                num_slots=num_slots,
-                num_colors=num_colors,
-                max_guesses=max_guesses,
-                reference=reference,
-                status=status,
-                secret_code=secret_code,
-                guesses=[],
-            )
-
-            await uow.games.asave(game)
-            await uow.commit()
-        return game
-
     def assert_guess(
         self, response: Any, expected_white_peg: int, expected_black_peg: int
     ):
@@ -69,13 +43,8 @@ class TestMastermindApi:
 
     async def test_get_games(self, api_client, anyio_backend):
         """Check if retrieve all games correctly"""
-        await self.create_game(
-            4,
-            4,
-            2,
-            "MYREF",
-            "running",
-            ["red", "red", "green", "yellow"],
+        await GameMother().a_game(
+            4, 4, 2, [Color.RED, Color.RED, Color.RED, Color.YELLOW], reference="MYREF"
         )
 
         response = api_client.get("/api/games/")
@@ -85,7 +54,12 @@ class TestMastermindApi:
                 has_entries(
                     {
                         "num_colors": 4,
-                        "secret_code": ["red", "red", "green", "yellow"],
+                        "secret_code": [
+                            Color.RED,
+                            Color.RED,
+                            Color.GREEN,
+                            Color.YELLOW,
+                        ],
                         "max_guesses": 2,
                         "reference": "MYREF",
                     }
@@ -93,18 +67,19 @@ class TestMastermindApi:
             )
         }
 
-        assert_that(response.status_code, is_(status.HTTP_200_OK))
+        assert_that(
+            response.status_code, is_(status.HTTP_200_OK), reason=response.json()
+        )
         assert_that(response.json(), expected_response)
 
     async def test_get_game(self, api_client, anyio_backend):
         """Check if retrieve a game correctly"""
-        game = await self.create_game(
+        game = await GameMother().a_game(
             4,
             4,
             2,
-            "MYREF",
-            "running",
-            ["red", "red", "green", "yellow"],
+            [Color.RED, Color.RED, Color.GREEN, Color.YELLOW],
+            reference="MYREF",
         )
 
         response = api_client.get(f"/api/games/{game.id}/")
@@ -132,7 +107,7 @@ class TestMastermindApi:
             {
                 "num_colors": 4,
                 "max_guesses": 2,
-                "status": "running",
+                "state": "running",
             }
         )
         assert_that(response.status_code, is_(status.HTTP_201_CREATED))
@@ -140,18 +115,19 @@ class TestMastermindApi:
 
     async def test_create_guess(self, api_client, anyio_backend):
         """Check if guess create correctly"""
-        game = await self.create_game(
+        game = await GameMother().a_game(
             4,
             6,
             2,
-            "MYREF",
-            "running",
-            ["green", "blue", "yellow", "red"],
+            [Color.GREEN, Color.BLUE, Color.YELLOW, Color.RED],
         )
 
         response = api_client.post(
             f"/api/games/{game.id}/guesses/",
             json={"code": ["orange", "orange", "orange", "orange"]},
+        )
+        assert_that(
+            response.status_code, is_(status.HTTP_200_OK), reason=response.json()
         )
 
         response = api_client.get(f"/api/games/{game.id}/")
@@ -167,18 +143,16 @@ class TestMastermindApi:
             }
         )
 
-        assert_that(response.status_code, status.HTTP_201_CREATED)
+        assert_that(response.status_code, is_(status.HTTP_200_OK))
         assert_that(response.json(), expected_response)
 
     async def test_retrieve_guesses(self, api_client, anyio_backend):
         """Check if guesses are retrieved correctly"""
-        game = await self.create_game(
+        game = await GameMother().a_game(
             4,
             5,
             2,
-            "MYREF",
-            "running",
-            ["green", "blue", "yellow", "red"],
+            [Color.GREEN, Color.BLUE, Color.YELLOW, Color.RED],
         )
 
         api_client.post(
@@ -208,32 +182,57 @@ class TestMastermindApi:
             }
         )
 
-        assert_that(response.status_code, status.HTTP_201_CREATED)
+        assert_that(response.status_code, is_(status.HTTP_200_OK))
         assert_that(response.json(), expected_response)
 
     @pytest.mark.parametrize(
         "secret_code,guess,white_pegs,black_pegs",
         [
             (
-                ["red", "green", "green", "blue"],
-                ["red", "green", "green", "blue"],
+                [Color.RED, Color.GREEN, Color.GREEN, Color.BLUE],
+                [Color.RED, Color.GREEN, Color.GREEN, Color.BLUE],
                 0,
                 4,
             ),
-            (["red", "red", "red", "red"], ["blue", "yellow", "orange", "blue"], 0, 0),
-            (["green", "blue", "blue", "red"], ["green", "blue", "red", "blue"], 2, 2),
-            (["blue", "blue", "blue", "red"], ["red", "blue", "green", "green"], 1, 1),
-            (["red", "blue", "green", "green"], ["blue", "blue", "blue", "red"], 1, 1),
-            (["blue", "blue", "blue", "red"], ["blue", "blue", "blue", "red"], 0, 4),
             (
-                ["white", "blue", "white", "blue"],
-                ["blue", "white", "blue", "white"],
+                [Color.RED, Color.RED, Color.RED, Color.RED],
+                [Color.BLUE, Color.YELLOW, Color.ORANGE, Color.BLUE],
+                0,
+                0,
+            ),
+            (
+                [Color.GREEN, Color.BLUE, Color.BLUE, Color.RED],
+                [Color.GREEN, Color.BLUE, Color.RED, Color.BLUE],
+                2,
+                2,
+            ),
+            (
+                [Color.BLUE, Color.BLUE, Color.BLUE, Color.RED],
+                [Color.RED, Color.BLUE, Color.GREEN, Color.GREEN],
+                1,
+                1,
+            ),
+            (
+                [Color.RED, Color.BLUE, Color.GREEN, Color.GREEN],
+                [Color.BLUE, Color.BLUE, Color.BLUE, Color.RED],
+                1,
+                1,
+            ),
+            (
+                [Color.BLUE, Color.BLUE, Color.BLUE, Color.RED],
+                [Color.BLUE, Color.BLUE, Color.BLUE, Color.RED],
+                0,
+                4,
+            ),
+            (
+                [Color.WHITE, Color.BLUE, Color.WHITE, Color.BLUE],
+                [Color.BLUE, Color.WHITE, Color.BLUE, Color.WHITE],
                 4,
                 0,
             ),
             (
-                ["orange", "orange", "orange", "white"],
-                ["orange", "white", "white", "white"],
+                [Color.ORANGE, Color.ORANGE, Color.ORANGE, Color.WHITE],
+                [Color.ORANGE, Color.WHITE, Color.WHITE, Color.WHITE],
                 0,
                 2,
             ),
@@ -243,18 +242,16 @@ class TestMastermindApi:
         self, api_client, secret_code, guess, white_pegs, black_pegs, anyio_backend
     ):
         """Check if return one white peg"""
-        game = await self.create_game(
+        game = await GameMother().a_game(
             4,
             6,
             2,
-            "MYREF",
-            "running",
             secret_code,
         )
 
         api_client.post(
             f"/api/games/{game.id}/guesses/",
-            json={"code": guess},
+            json={"code": [c.value for c in guess]},
         )
         response = api_client.get(f"/api/games/{game.id}/")
 
