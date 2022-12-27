@@ -5,6 +5,8 @@ from enum import Enum
 from typing import Generic
 
 from pydash import py_
+from pyvaru import ValidationException
+
 from apps.shared.typing import Id, T
 
 
@@ -95,8 +97,11 @@ class Game:
         self.guesses = guesses
 
     def add_guess(self, code: list[Color]) -> None:
-        if self.state != GameState.RUNNING:
-            raise Exception("Cannot add a new guess, the game is already finished")
+        from apps.mastermind.core.domain.validator import AddGuessValidator
+
+        validation = AddGuessValidator().validate({"game": self, "code": code})
+        if not validation.is_successful():
+            raise ValidationException(validation)
 
         black_pegs, white_pegs = self._feedback(code)
         self.guesses.append(Guess(code, black_pegs, white_pegs))
@@ -124,7 +129,10 @@ class Game:
         num_slots: int, num_colors: int, max_guesses: int, id: Id | None = None
     ) -> "Game":
         reference = create_reference().upper()
+        num_colors = clamp(1, num_colors, len(Color))
         chosen_colors = py_.take(colors, num_colors)
+
+        num_slots = clamp(1, num_slots, num_slots)
         secret_code = random.choices(chosen_colors, k=num_slots)
         return Game(
             id,
@@ -137,3 +145,7 @@ class Game:
             GameState.RUNNING,
             [],
         )
+
+
+def clamp(minvalue: int, value: int, maxvalue: int) -> int:
+    return max(minvalue, min(value, maxvalue))

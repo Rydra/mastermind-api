@@ -38,6 +38,7 @@ motor = "^3.1.1"
 strawberry-graphql = {extras = ["debug-server"], version = "^0.151.2"}
 aiocache = {extras = ["redis"], version = "^0.11.1"}
 aioredis = "<2.0"
+pyvaru = {git = "https://github.com/Rydra/pyvaru"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"

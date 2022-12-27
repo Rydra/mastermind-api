@@ -4,7 +4,7 @@ import pytest
 from starlette import status
 from starlette.testclient import TestClient
 
-from apps.mastermind.core.domain.domain import Game
+from apps.mastermind.core.domain.domain import Game, Color
 from hamcrest import *
 
 from apps.mastermind.infrastructure.persistence.uow import DjangoUnitOfWork
@@ -68,7 +68,7 @@ class TestMastermindApi:
             2,
             "MYREF",
             "running",
-            ["red", "red", "green", "yellow"],
+            [Color.RED, Color.RED, Color.GREEN, Color.YELLOW],
         )
 
         response = api_client.get("/api/games/")
@@ -78,7 +78,12 @@ class TestMastermindApi:
                 has_entries(
                     {
                         "num_colors": 4,
-                        "secret_code": ["red", "red", "green", "yellow"],
+                        "secret_code": [
+                            Color.RED,
+                            Color.RED,
+                            Color.GREEN,
+                            Color.YELLOW,
+                        ],
                         "max_guesses": 2,
                         "reference": "MYREF",
                     }
@@ -97,7 +102,7 @@ class TestMastermindApi:
             2,
             "MYREF",
             "running",
-            ["red", "red", "green", "yellow"],
+            [Color.RED, Color.RED, Color.GREEN, Color.YELLOW],
         )
 
         response = api_client.get(f"/api/games/{game.id}/")
@@ -105,7 +110,7 @@ class TestMastermindApi:
         expected_response = has_entries(
             {
                 "num_colors": 4,
-                "secret_code": ["red", "red", "green", "yellow"],
+                "secret_code": [Color.RED, Color.RED, Color.GREEN, Color.YELLOW],
                 "max_guesses": 2,
                 "reference": "MYREF",
             }
@@ -139,12 +144,12 @@ class TestMastermindApi:
             2,
             "MYREF",
             "running",
-            ["green", "blue", "yellow", "red"],
+            [Color.GREEN, Color.BLUE, Color.YELLOW, Color.RED],
         )
 
         api_client.post(
             f"/api/games/{game.id}/guesses/",
-            json={"code": ["orange", "orange", "orange", "orange"]},
+            json={"code": [Color.ORANGE, Color.ORANGE, Color.ORANGE, Color.ORANGE]},
         )
 
         response = api_client.get(f"/api/games/{game.id}/")
@@ -152,7 +157,12 @@ class TestMastermindApi:
             {
                 "guesses": has_item(
                     {
-                        "code": ["orange", "orange", "orange", "orange"],
+                        "code": [
+                            Color.ORANGE,
+                            Color.ORANGE,
+                            Color.ORANGE,
+                            Color.ORANGE,
+                        ],
                         "white_pegs": 0,
                         "black_pegs": 0,
                     }
@@ -160,7 +170,7 @@ class TestMastermindApi:
             }
         )
 
-        assert_that(response.status_code, status.HTTP_201_CREATED)
+        assert_that(response.status_code, is_(status.HTTP_201_CREATED))
         assert_that(response.json(), expected_response)
 
     async def test_retrieve_guesses(self, api_client, anyio_backend):
@@ -171,16 +181,16 @@ class TestMastermindApi:
             2,
             "MYREF",
             "running",
-            ["green", "blue", "yellow", "red"],
+            [Color.GREEN, Color.BLUE, Color.YELLOW, Color.RED],
         )
 
         api_client.post(
             f"/api/games/{game.id}/guesses/",
-            json={"code": ["orange", "orange", "orange", "orange"]},
+            json={"code": [Color.ORANGE, Color.ORANGE, Color.ORANGE, Color.ORANGE]},
         )
         api_client.post(
             f"/api/games/{game.id}/guesses/",
-            json={"code": ["blue", "red", "orange", "orange"]},
+            json={"code": [Color.BLUE, Color.RED, Color.ORANGE, Color.ORANGE]},
         )
         response = api_client.get(f"/api/games/{game.id}/")
 
@@ -188,12 +198,17 @@ class TestMastermindApi:
             {
                 "guesses": contains_exactly(
                     {
-                        "code": ["orange", "orange", "orange", "orange"],
+                        "code": [
+                            Color.ORANGE,
+                            Color.ORANGE,
+                            Color.ORANGE,
+                            Color.ORANGE,
+                        ],
                         "white_pegs": 0,
                         "black_pegs": 0,
                     },
                     {
-                        "code": ["blue", "red", "orange", "orange"],
+                        "code": [Color.BLUE, Color.RED, Color.ORANGE, Color.ORANGE],
                         "white_pegs": 2,
                         "black_pegs": 0,
                     },
@@ -201,32 +216,57 @@ class TestMastermindApi:
             }
         )
 
-        assert_that(response.status_code, status.HTTP_201_CREATED)
+        assert_that(response.status_code, is_(status.HTTP_201_CREATED))
         assert_that(response.json(), expected_response)
 
     @pytest.mark.parametrize(
         "secret_code,guess,white_pegs,black_pegs",
         [
             (
-                ["red", "green", "green", "blue"],
-                ["red", "green", "green", "blue"],
+                [Color.RED, Color.GREEN, Color.GREEN, Color.BLUE],
+                [Color.RED, Color.GREEN, Color.GREEN, Color.BLUE],
                 0,
                 4,
             ),
-            (["red", "red", "red", "red"], ["blue", "yellow", "orange", "blue"], 0, 0),
-            (["green", "blue", "blue", "red"], ["green", "blue", "red", "blue"], 2, 2),
-            (["blue", "blue", "blue", "red"], ["red", "blue", "green", "green"], 1, 1),
-            (["red", "blue", "green", "green"], ["blue", "blue", "blue", "red"], 1, 1),
-            (["blue", "blue", "blue", "red"], ["blue", "blue", "blue", "red"], 0, 4),
             (
-                ["white", "blue", "white", "blue"],
-                ["blue", "white", "blue", "white"],
+                [Color.RED, Color.RED, Color.RED, Color.RED],
+                [Color.BLUE, Color.YELLOW, Color.ORANGE, Color.BLUE],
+                0,
+                0,
+            ),
+            (
+                [Color.GREEN, Color.BLUE, Color.BLUE, Color.RED],
+                [Color.GREEN, Color.BLUE, Color.RED, Color.BLUE],
+                2,
+                2,
+            ),
+            (
+                [Color.BLUE, Color.BLUE, Color.BLUE, Color.RED],
+                [Color.RED, Color.BLUE, Color.GREEN, Color.GREEN],
+                1,
+                1,
+            ),
+            (
+                [Color.RED, Color.BLUE, Color.GREEN, Color.GREEN],
+                [Color.BLUE, Color.BLUE, Color.BLUE, Color.RED],
+                1,
+                1,
+            ),
+            (
+                [Color.BLUE, Color.BLUE, Color.BLUE, Color.RED],
+                [Color.BLUE, Color.BLUE, Color.BLUE, Color.RED],
+                0,
+                4,
+            ),
+            (
+                [Color.WHITE, Color.BLUE, Color.WHITE, Color.BLUE],
+                [Color.BLUE, Color.WHITE, Color.BLUE, Color.WHITE],
                 4,
                 0,
             ),
             (
-                ["orange", "orange", "orange", "white"],
-                ["orange", "white", "white", "white"],
+                [Color.ORANGE, Color.ORANGE, Color.ORANGE, Color.WHITE],
+                [Color.ORANGE, Color.WHITE, Color.WHITE, Color.WHITE],
                 0,
                 2,
             ),

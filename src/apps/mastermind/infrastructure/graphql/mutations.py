@@ -1,6 +1,8 @@
 import strawberry
 from typing import TypeAlias
 
+from pyvaru import ValidationException
+
 from apps.mastermind.core.commands.game import CreateGame, AddGuess
 from apps.mastermind.infrastructure.graphql.shared import ColorEnum
 from apps.shared.command_bus import CommandBus
@@ -23,16 +25,38 @@ class AddGuessSuccess:
 
 
 @strawberry.type
+class ErrorMessage:
+    label: str
+    error_messages: list[str]
+
+
+@strawberry.type
+class ValidationError:
+    message: str
+    errors: list[ErrorMessage]
+
+    @staticmethod
+    def from_exception(e: ValidationException) -> "ValidationError":
+        return ValidationError(
+            message=e.message,
+            errors=[
+                ErrorMessage(label=label, error_messages=error_messages)
+                for label, error_messages in e.validation_result.errors.items()
+            ],
+        )
+
+
+@strawberry.type
 class Error:
     reason: str
 
 
 CreateGameResponse: TypeAlias = strawberry.union(  # type: ignore
-    "CreateGameResponse", [GameCreatedSuccess, Error]  # type: ignore
+    "CreateGameResponse", [GameCreatedSuccess, ValidationError, Error]  # type: ignore
 )
 
 AddGuessResponse: TypeAlias = strawberry.union(  # type: ignore
-    "AddGuessResponse", [AddGuessSuccess, Error]
+    "AddGuessResponse", [AddGuessSuccess, ValidationError, Error]
 )
 
 
@@ -70,5 +94,7 @@ class Mutation:
         try:
             await CommandBus().asend(AddGuess(id=input.game_id, code=input.code))
             return AddGuessSuccess(ok=True)
+        except ValidationException as e:
+            return ValidationError.from_exception(e)
         except Exception as e:
             return Error(reason=str(e))
