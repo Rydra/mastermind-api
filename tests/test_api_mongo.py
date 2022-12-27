@@ -38,7 +38,7 @@ class TestMastermindApi:
         num_colors: int,
         max_guesses: int,
         reference: str,
-        status: str,
+        state: str,
         secret_code: list[Color],
     ) -> Game:
         async with provide(MongoUnitOfWork) as uow:
@@ -48,7 +48,7 @@ class TestMastermindApi:
                 num_colors=num_colors,
                 max_guesses=max_guesses,
                 reference=reference,
-                status=status,
+                state=state,
                 secret_code=secret_code,
                 allowed_colors=[],
                 guesses=[],
@@ -133,7 +133,7 @@ class TestMastermindApi:
             {
                 "num_colors": 4,
                 "max_guesses": 2,
-                "status": "running",
+                "state": "running",
             }
         )
         assert_that(response.status_code, is_(status.HTTP_201_CREATED))

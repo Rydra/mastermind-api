@@ -1,5 +1,6 @@
 import strawberry
 
-from apps.mastermind.core.domain.domain import Color
+from apps.mastermind.core.domain.domain import Color, GameState
 
-ColorNode = strawberry.enum(Color)
+ColorEnum = strawberry.enum(Color)
+GameStateEnum = strawberry.enum(GameState)

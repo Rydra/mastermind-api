@@ -2,7 +2,7 @@ import strawberry
 from typing import TypeAlias
 
 from apps.mastermind.core.commands.game import CreateGame, AddGuess
-from apps.mastermind.infrastructure.graphql.shared import ColorNode
+from apps.mastermind.infrastructure.graphql.shared import ColorEnum
 from apps.shared.command_bus import CommandBus
 
 
@@ -46,7 +46,7 @@ class CreateGameInput:
 @strawberry.input
 class AddGuessInput:
     game_id: str
-    code: list[ColorNode]
+    code: list[ColorEnum]
 
 
 @strawberry.type

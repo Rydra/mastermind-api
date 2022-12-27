@@ -41,10 +41,13 @@ colors = [
 ]
 
 
-class GameStatus:
+class GameState(Enum):
     RUNNING = "running"
     WON = "won"
     LOST = "lost"
+
+    def __str__(self) -> str:
+        return self.value
 
 
 def create_reference() -> str:
@@ -77,7 +80,7 @@ class Game:
         secret_code: list[Color],
         max_guesses: int,
         allowed_colors: list[Color],
-        status: str,
+        state: GameState,
         guesses: list[Guess],
     ):
         self.id = id
@@ -86,24 +89,24 @@ class Game:
         self.num_colors = num_colors
         self.secret_code = secret_code
         self.max_guesses = max_guesses
-        self.status = status
+        self.state = state
         self.colors: list[Color] = py_.take(colors, num_colors)
         self.allowed_colors = allowed_colors
         self.guesses = guesses
 
     def add_guess(self, code: list[Color]) -> None:
-        if self.status != GameStatus.RUNNING:
+        if self.state != GameState.RUNNING:
             raise Exception("Cannot add a new guess, the game is already finished")
 
         black_pegs, white_pegs = self._feedback(code)
         self.guesses.append(Guess(code, black_pegs, white_pegs))
 
         if black_pegs == self.num_slots:
-            self.status = GameStatus.WON
+            self.state = GameState.WON
         elif len(self.guesses) >= self.max_guesses:
-            self.status = GameStatus.LOST
+            self.state = GameState.LOST
         else:
-            self.status = GameStatus.RUNNING
+            self.state = GameState.RUNNING
 
     def _feedback(self, code: list[Color]) -> tuple[int, int]:
         zipped_code = zip(code, self.secret_code)
@@ -131,6 +134,6 @@ class Game:
             secret_code,
             max_guesses,
             chosen_colors,
-            GameStatus.RUNNING,
+            GameState.RUNNING,
             [],
         )

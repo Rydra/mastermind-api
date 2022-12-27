@@ -1,6 +1,6 @@
 import uuid
 
-from apps.mastermind.core.domain.domain import Game, Guess
+from apps.mastermind.core.domain.domain import Game, Guess, GameState
 from apps.mastermind.core.domain.interfaces import IGameRepository
 from apps.mastermind.infrastructure.persistence.models import GameModel, GuessModel
 from apps.shared.typing import Id
@@ -49,7 +49,7 @@ class GameRepository(IGameRepository):
             num_colors=model.num_colors,
             num_slots=model.num_slots,
             max_guesses=model.max_guesses,
-            status=model.status,
+            state=model.status,
             secret_code=model.secret_code,
             guesses=guesses,
             allowed_colors=[],
@@ -62,7 +62,7 @@ class GameRepository(IGameRepository):
             num_colors=game.num_colors,
             num_slots=game.num_slots,
             max_guesses=game.max_guesses,
-            status=game.status,
+            status=game.state,
             secret_code=game.secret_code,
         )
 
@@ -79,7 +79,7 @@ class GameRepository(IGameRepository):
                 num_colors=game.num_colors,
                 num_slots=game.num_slots,
                 max_guesses=game.max_guesses,
-                status=game.status,
+                status=game.state,
                 secret_code=game.secret_code,
             )
             game.id = game_model.id
@@ -91,7 +91,7 @@ class GameRepository(IGameRepository):
                     num_colors=game.num_colors,
                     num_slots=game.num_slots,
                     max_guesses=game.max_guesses,
-                    status=game.status,
+                    status=game.state,
                     secret_code=game.secret_code,
                 ),
             )
@@ -121,7 +121,7 @@ class GameRepository(IGameRepository):
             num_colors=model.num_colors,
             num_slots=model.num_slots,
             max_guesses=model.max_guesses,
-            status=model.status,
+            state=GameState(model.status),
             secret_code=model.secret_code,
             guesses=guesses,
             allowed_colors=[],

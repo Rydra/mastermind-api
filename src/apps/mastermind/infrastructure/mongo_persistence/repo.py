@@ -5,7 +5,7 @@ from bson.errors import InvalidId
 from motor.core import AgnosticDatabase
 from pymongo import InsertOne, ReplaceOne
 
-from apps.mastermind.core.domain.domain import Game, Guess, Color
+from apps.mastermind.core.domain.domain import Game, Guess, Color, GameState
 from apps.mastermind.core.domain.interfaces import IGameRepository
 from apps.mastermind.infrastructure.mongo_persistence.session import Session
 from apps.shared.exceptions import NotFound
@@ -32,7 +32,7 @@ class MongoGameRepository(IGameRepository):
             "num_colors": game.num_colors,
             "secret_code": [str(c) for c in game.secret_code],
             "max_guesses": game.max_guesses,
-            "status": game.status,
+            "state": str(game.state),
             "allowed_colors": [str(c) for c in game.allowed_colors],
             "guesses": [
                 {
@@ -75,7 +75,7 @@ class MongoGameRepository(IGameRepository):
             secret_code=[Color(c) for c in document["secret_code"]],
             max_guesses=document["max_guesses"],
             allowed_colors=[Color(c) for c in document.get("allowed_colors", [])],
-            status=document["status"],
+            state=GameState(document.get("state") or document.get("status")),
             guesses=[
                 Guess(
                     code=[Color(c) for c in guess["code"]],

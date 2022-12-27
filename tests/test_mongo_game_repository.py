@@ -25,7 +25,7 @@ class TestMongoGameRepository:
                     max_guesses=10,
                     num_colors=4,
                     secret_code=game.secret_code,
-                    status=game.status,
+                    state=game.state,
                     guesses=contains_exactly(
                         has_properties(code=[Color.RED, Color.RED])
                     ),
@@ -58,7 +58,7 @@ class TestMongoGameRepository:
                     max_guesses=10,
                     num_colors=4,
                     secret_code=game.secret_code,
-                    status=game.status,
+                    state=game.state,
                     guesses=contains_exactly(
                         has_properties(code=[Color.RED, Color.RED]),
                         has_properties(code=[Color.GREEN, Color.GREEN]),

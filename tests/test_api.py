@@ -40,7 +40,7 @@ class TestMastermindApi:
                 num_colors=num_colors,
                 max_guesses=max_guesses,
                 reference=reference,
-                status=status,
+                state=status,
                 secret_code=secret_code,
                 guesses=[],
             )
