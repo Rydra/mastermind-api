@@ -6,7 +6,7 @@ from pymongo import MongoClient
 from starlette import status
 from starlette.testclient import TestClient
 
-from apps.mastermind.core.domain.domain import Game
+from apps.mastermind.core.domain.domain import Game, Color
 from apps.mastermind.infrastructure.mongo_persistence.uow import MongoUnitOfWork
 from composite_root.container import provide
 from config.settings import settings
@@ -39,7 +39,7 @@ class TestMastermindApi:
         max_guesses: int,
         reference: str,
         status: str,
-        secret_code: list[str],
+        secret_code: list[Color],
     ) -> Game:
         async with provide(MongoUnitOfWork) as uow:
             game = Game(
@@ -50,6 +50,7 @@ class TestMastermindApi:
                 reference=reference,
                 status=status,
                 secret_code=secret_code,
+                allowed_colors=[],
                 guesses=[],
             )
 
@@ -75,7 +76,7 @@ class TestMastermindApi:
             2,
             "MYREF",
             "running",
-            ["red", "red", "green", "yellow"],
+            [Color.RED, Color.RED, Color.RED, Color.YELLOW],
         )
 
         response = api_client.get("/api/games/")

@@ -52,6 +52,7 @@ class GameRepository(IGameRepository):
             status=model.status,
             secret_code=model.secret_code,
             guesses=guesses,
+            allowed_colors=[],
         )
 
     def _to_model(self, game: Game) -> GameModel:
@@ -123,4 +124,5 @@ class GameRepository(IGameRepository):
             status=model.status,
             secret_code=model.secret_code,
             guesses=guesses,
+            allowed_colors=[],
         )

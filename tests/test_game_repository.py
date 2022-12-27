@@ -20,7 +20,6 @@ class TestGameRepository:
                 num_slots=game.num_slots,
                 max_guesses=10,
                 num_colors=4,
-                secret_code=game.secret_code,
                 status=game.status,
             ),
         )
@@ -40,7 +39,6 @@ class TestGameRepository:
                 num_slots=game.num_slots,
                 max_guesses=10,
                 num_colors=4,
-                secret_code=game.secret_code,
                 status=game.status,
             ),
         )
