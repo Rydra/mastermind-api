@@ -6,11 +6,10 @@ from pymongo import MongoClient
 from starlette import status
 from starlette.testclient import TestClient
 
-from apps.mastermind.core.domain.domain import Game, Color
-from apps.mastermind.infrastructure.mongo_persistence.uow import MongoUnitOfWork
-from composite_root.container import provide
+from apps.mastermind.core.domain.domain import Color
 from config.settings import settings
 from main import app
+from tests.stubs import GameMother
 
 
 @pytest.fixture
@@ -32,30 +31,6 @@ def setup() -> None:
 
 
 class TestMastermindApi:
-    @staticmethod
-    async def create_game(
-        num_slots: int,
-        num_colors: int,
-        max_guesses: int,
-        secret_code: list[Color],
-        reference: str | None = None,
-    ) -> Game:
-        async with provide(MongoUnitOfWork) as uow:
-            game = Game.new(
-                id=uow.games.next_id(),
-                num_slots=num_slots,
-                num_colors=num_colors,
-                max_guesses=max_guesses,
-            )
-            game.secret_code = secret_code
-
-            if reference:
-                game.reference = reference
-
-            await uow.games.asave(game)
-            await uow.commit()
-        return game
-
     def assert_guess(
         self, response: Any, expected_white_peg: int, expected_black_peg: int
     ):
@@ -68,7 +43,7 @@ class TestMastermindApi:
 
     async def test_get_games(self, api_client, anyio_backend):
         """Check if retrieve all games correctly"""
-        await self.create_game(
+        await GameMother().a_game(
             4, 4, 2, [Color.RED, Color.RED, Color.RED, Color.YELLOW], reference="MYREF"
         )
 
@@ -99,7 +74,7 @@ class TestMastermindApi:
 
     async def test_get_game(self, api_client, anyio_backend):
         """Check if retrieve a game correctly"""
-        game = await self.create_game(
+        game = await GameMother().a_game(
             4,
             4,
             2,
@@ -140,7 +115,7 @@ class TestMastermindApi:
 
     async def test_create_guess(self, api_client, anyio_backend):
         """Check if guess create correctly"""
-        game = await self.create_game(
+        game = await GameMother().a_game(
             4,
             6,
             2,
@@ -173,7 +148,7 @@ class TestMastermindApi:
 
     async def test_retrieve_guesses(self, api_client, anyio_backend):
         """Check if guesses are retrieved correctly"""
-        game = await self.create_game(
+        game = await GameMother().a_game(
             4,
             5,
             2,
@@ -267,7 +242,7 @@ class TestMastermindApi:
         self, api_client, secret_code, guess, white_pegs, black_pegs, anyio_backend
     ):
         """Check if return one white peg"""
-        game = await self.create_game(
+        game = await GameMother().a_game(
             4,
             6,
             2,
