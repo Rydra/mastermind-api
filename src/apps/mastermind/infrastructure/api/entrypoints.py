@@ -1,7 +1,9 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi_utils.cbv import cbv
 from starlette.responses import JSONResponse
 
+from apps.auth.core.domain import User
+from apps.auth.infrastructure.api.endpoints import get_current_user
 from apps.mastermind.core.commands.game import CreateGame, AddGuess
 from apps.mastermind.core.queries.game import (
     ListGamesHandler,
@@ -35,7 +37,9 @@ class GameController:
             500: {"model": Message, "description": "Internal server error."},
         },
     )
-    async def list_games(self) -> ListGamesResponse:
+    async def list_games(
+        self, user: User = Depends(get_current_user)
+    ) -> ListGamesResponse:
         try:
             games = await provide(ListGamesHandler).run(ListGames())
             results = ListGamesResponse(
