@@ -1,0 +1,31 @@
+# English (United Kingdom) translations for PROJECT.
+# Copyright (C) 2022 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2022-12-27 20:52+0100\n"
+"PO-Revision-Date: 2022-12-28 08:21+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en_GB\n"
+"Language-Team: en_GB <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.11.0\n"
+
+#: src/apps/mastermind/core/domain/validator.py:34
+msgid ""
+"The guess has some invalid colors for this game, or does not have the "
+"appropriate length"
+msgstr ""
+"The guess has some invalid colors for this game"
+
+#: src/apps/mastermind/infrastructure/persistence/apps.py:8
+msgid "Mastermind"
+msgstr ""
+
