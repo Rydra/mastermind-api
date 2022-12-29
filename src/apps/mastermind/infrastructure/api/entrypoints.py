@@ -1,7 +1,9 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi_utils.cbv import cbv
 from starlette.responses import JSONResponse
 
+from apps.auth.core.domain import User
+from apps.auth.infrastructure.api.endpoints import get_current_user
 from apps.mastermind.core.commands.game import CreateGame, AddGuess
 from apps.mastermind.core.queries.game import (
     ListGamesHandler,
@@ -35,7 +37,9 @@ class GameController:
             500: {"model": Message, "description": "Internal server error."},
         },
     )
-    async def list_games(self) -> ListGamesResponse:
+    async def list_games(
+        self, user: User = Depends(get_current_user)
+    ) -> ListGamesResponse:
         try:
             games = await provide(ListGamesHandler).run(ListGames())
             results = ListGamesResponse(
@@ -56,7 +60,9 @@ class GameController:
             500: {"model": Message, "description": "Internal server error."},
         },
     )
-    async def get_game(self, game_id: str) -> GameDto:
+    async def get_game(
+        self, game_id: str, user: User = Depends(get_current_user)
+    ) -> GameDto:
         try:
             game = await provide(GetGameHandler).run(GetGame(id=game_id))
             return GameDto.from_domain(game)
@@ -75,7 +81,9 @@ class GameController:
             500: {"model": Message, "description": "Internal server error."},
         },
     )
-    async def create_game(self, request: CreateGameRequest) -> GameDto:
+    async def create_game(
+        self, request: CreateGameRequest, user: User = Depends(get_current_user)
+    ) -> GameDto:
         try:
             command = CreateGame(
                 num_slots=request.num_slots,
@@ -99,7 +107,12 @@ class GameController:
             500: {"model": Message, "description": "Internal server error."},
         },
     )
-    async def add_guess(self, game_id: str, request: AddGuessRequest) -> GameDto:
+    async def add_guess(
+        self,
+        game_id: str,
+        request: AddGuessRequest,
+        user: User = Depends(get_current_user),
+    ) -> GameDto:
         try:
             game = await CommandBus().asend(AddGuess(id=game_id, code=request.code))
 

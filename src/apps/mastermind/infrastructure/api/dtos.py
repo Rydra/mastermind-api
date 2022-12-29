@@ -22,7 +22,6 @@ class GameDto(BaseModel):
     num_colors: int
     num_slots: int
     max_guesses: int = 10
-    colors: list[Color]
     state: GameState
     secret_code: list[Color]
     allowed_colors: list[Color]
@@ -36,7 +35,6 @@ class GameDto(BaseModel):
             num_colors=game.num_colors,
             num_slots=game.num_slots,
             max_guesses=game.max_guesses,
-            colors=game.colors,
             state=game.state,
             secret_code=game.secret_code,
             allowed_colors=game.allowed_colors,

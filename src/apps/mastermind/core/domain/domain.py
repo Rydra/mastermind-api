@@ -92,7 +92,6 @@ class Game:
         self.secret_code = secret_code
         self.max_guesses = max_guesses
         self.state = state
-        self.colors: list[Color] = py_.take(colors, num_colors)
         self.allowed_colors = allowed_colors
         self.guesses = guesses
 
@@ -120,7 +119,8 @@ class Game:
         secret_counts = py_.count_by(self.secret_code, lambda x: x)
 
         white_pegs = sum(
-            min(code_counts.get(c, 0), secret_counts.get(c, 0)) for c in self.colors
+            min(code_counts.get(c, 0), secret_counts.get(c, 0))
+            for c in self.allowed_colors
         )
         return black_pegs, white_pegs - black_pegs
 

@@ -3,6 +3,7 @@ from typing import cast
 from pyvaru import ValidationRule, Validator
 
 from apps.mastermind.core.domain.domain import Color, Game, GameState
+from translations import _
 
 
 class CodeIsValidForGame(ValidationRule):
@@ -29,8 +30,10 @@ class AddGuessValidator(Validator):
             CodeIsValidForGame(
                 {"code": data["code"], "game": data["game"]},
                 label="code_is_valid",
-                error_message="The guess has some invalid colors for this game, or does "
-                "not have the appropriate length",
+                error_message=_(
+                    "The guess has some invalid colors for this game, or does "
+                    "not have the appropriate length"
+                ),
             ),
             GameIsRunning(
                 {"game": data["game"]},

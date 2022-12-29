@@ -21,6 +21,9 @@ class Settings(BaseSettings):
 
     use_cache: bool = True
     test_run: bool = False
+    algorithm = "HS256"
+    access_token_expire_minutes = 30
+    ignore_authentication: bool = True
 
 
 settings = Settings()
