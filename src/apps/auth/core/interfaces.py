@@ -7,7 +7,7 @@ from apps.shared.typing import Id
 
 class ITokenProvider(ABC):
     @abstractmethod
-    async def get_payload(self, token: str) -> dict:
+    async def decode_token(self, token: str) -> dict:
         ...
 
     @abstractmethod

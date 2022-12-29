@@ -3,6 +3,7 @@ from typing import TypeAlias
 
 from pyvaru import ValidationException
 
+from apps.auth.infrastructure.graphql.context import IsAuthenticated
 from apps.mastermind.core.commands.game import CreateGame, AddGuess
 from apps.mastermind.infrastructure.graphql.shared import ColorEnum
 from apps.shared.command_bus import CommandBus
@@ -74,8 +75,8 @@ class AddGuessInput:
 
 
 @strawberry.type
-class Mutation:
-    @strawberry.mutation
+class MastermindMutations:
+    @strawberry.mutation(permission_classes=[IsAuthenticated])
     async def create_game(self, input: CreateGameInput) -> CreateGameResponse:
         try:
             command = CreateGame(
@@ -89,7 +90,7 @@ class Mutation:
         except Exception as e:
             return Error(reason=str(e))
 
-    @strawberry.mutation
+    @strawberry.mutation(permission_classes=[IsAuthenticated])
     async def add_guess(self, input: AddGuessInput) -> AddGuessResponse:
         try:
             await CommandBus().asend(AddGuess(id=input.game_id, code=input.code))

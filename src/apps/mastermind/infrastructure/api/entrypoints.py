@@ -60,7 +60,9 @@ class GameController:
             500: {"model": Message, "description": "Internal server error."},
         },
     )
-    async def get_game(self, game_id: str) -> GameDto:
+    async def get_game(
+        self, game_id: str, user: User = Depends(get_current_user)
+    ) -> GameDto:
         try:
             game = await provide(GetGameHandler).run(GetGame(id=game_id))
             return GameDto.from_domain(game)
@@ -79,7 +81,9 @@ class GameController:
             500: {"model": Message, "description": "Internal server error."},
         },
     )
-    async def create_game(self, request: CreateGameRequest) -> GameDto:
+    async def create_game(
+        self, request: CreateGameRequest, user: User = Depends(get_current_user)
+    ) -> GameDto:
         try:
             command = CreateGame(
                 num_slots=request.num_slots,
@@ -103,7 +107,12 @@ class GameController:
             500: {"model": Message, "description": "Internal server error."},
         },
     )
-    async def add_guess(self, game_id: str, request: AddGuessRequest) -> GameDto:
+    async def add_guess(
+        self,
+        game_id: str,
+        request: AddGuessRequest,
+        user: User = Depends(get_current_user),
+    ) -> GameDto:
         try:
             game = await CommandBus().asend(AddGuess(id=game_id, code=request.code))
 

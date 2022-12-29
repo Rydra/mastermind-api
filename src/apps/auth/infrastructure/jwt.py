@@ -11,7 +11,7 @@ class JWTTokenProvider(ITokenProvider):
     def __init__(self, secret_provider: ISecretProvider) -> None:
         self.secret_provider = secret_provider
 
-    async def get_payload(self, token: str) -> dict:
+    async def decode_token(self, token: str) -> dict:
         payload = jwt.decode(
             token,
             await self.secret_provider.get_secret_key(),
@@ -19,7 +19,7 @@ class JWTTokenProvider(ITokenProvider):
         )
         return payload
 
-    async def encode_payload(
+    async def create_token(
         self, data: dict, expires_delta: timedelta | None = None, **kwargs: Any
     ) -> str:
         to_encode = data.copy()

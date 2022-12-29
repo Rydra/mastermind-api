@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from apps.mastermind.infrastructure.api.entrypoints import router as game_router
 from apps.auth.infrastructure.api.endpoints import router as auth_router
-from apps.mastermind.infrastructure.graphql.entrypoints import (
+from composite_root.graphql import (
     graphql_app,
 )
 from composite_root.bootstrapper import bootstrap
@@ -36,7 +36,7 @@ app = FastAPI(
 app.include_router(game_router)
 app.include_router(auth_router)
 router = APIRouter()
-router.add_route("/graphql/", graphql_app)
+app.include_router(graphql_app, prefix="/graphql")
 router.add_websocket_route("/graphql/", graphql_app)
 
 app.include_router(router)

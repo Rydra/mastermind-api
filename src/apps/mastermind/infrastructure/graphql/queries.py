@@ -2,6 +2,7 @@ from typing import cast, Generic
 
 import strawberry
 
+from apps.auth.infrastructure.graphql.context import IsAuthenticated
 from apps.mastermind.core.queries.game import (
     ListGamesHandler,
     ListGames,
@@ -65,13 +66,13 @@ class GameNode:
 
 
 @strawberry.type
-class Query:
-    @strawberry.field
+class MastermindQueries:
+    @strawberry.field(permission_classes=[IsAuthenticated])
     async def games(self) -> Page[GameNode]:  # type: ignore
         games = await provide(ListGamesHandler).run(ListGames())
         return Page(count=games.count, results=games.results)
 
-    @strawberry.field
+    @strawberry.field(permission_classes=[IsAuthenticated])
     async def game(self, id: str) -> GameNode | None:
         try:
             game = await provide(GetGameHandler).run(GetGame(id=id))
