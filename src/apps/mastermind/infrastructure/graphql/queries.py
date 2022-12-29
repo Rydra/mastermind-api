@@ -43,7 +43,6 @@ class GameNode:
     num_colors: int
     num_slots: int
     max_guesses: int
-    colors: list[ColorEnum]
     state: GameStateEnum
     secret_code: list[ColorEnum]
     allowed_colors: list[ColorEnum]
@@ -57,7 +56,6 @@ class GameNode:
             num_colors=game.num_colors,
             num_slots=game.num_slots,
             max_guesses=game.max_guesses,
-            colors=game.colors,
             state=game.state,
             secret_code=game.secret_code,
             allowed_colors=game.allowed_colors,
